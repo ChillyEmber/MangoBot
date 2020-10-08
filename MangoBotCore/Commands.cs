@@ -1,21 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Threading.Tasks;
 using MangoBotStartup;
-using System.IO;
+using Mono.Options;
 using Newtonsoft.Json;
 using System;
-using unirest_net;
-using unirest_net.http;
-using unirest_net.request;
-using System.Net.NetworkInformation;
-using MangoBotCommandsNamespace;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Mono;
-using Mono.Options;
-using System.Linq;
+using System.IO;
+using System.Threading.Tasks;
+using unirest_net.http;
 
 namespace MangoBotCommandsNamespace
 {
@@ -32,7 +25,7 @@ namespace MangoBotCommandsNamespace
 
 
         [Command("ping")]
-        private async Task Ping()
+        private async Task Ping(params string[] args)
         {
             await ReplyAsync("Pong! 🏓 **" + Program._client.Latency + "ms**");
         }
@@ -57,12 +50,22 @@ namespace MangoBotCommandsNamespace
             }
         }
         [Command("status")]
-        private async Task status(string args)
+        private async Task status(params string[] args)
         {
             if (Context.User.Id == DiscordBotOwner)
             {
-                string status = args;
-                await Program._client.SetGameAsync($"{status}");
+                if (args.Length == 0)
+                {
+                    await Program._client.SetGameAsync("");
+                }
+                if (args.Length == 1)
+                {
+                    await Program._client.SetGameAsync($"{args[0]}");
+                }
+                if (args.Length == 2 | args.Length > 2)
+                {
+                    await ReplyAsync("You can't set more than one status!");
+                }
             }
             else
             {
@@ -84,7 +87,7 @@ namespace MangoBotCommandsNamespace
                 $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n");
         }
         [Command("penis")]
-        private async Task penis(string args)
+        private async Task penis(params string[] args)
         {
             /*string[] penisquotes = { "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D"};
             Random rand = new Random();
@@ -93,23 +96,46 @@ namespace MangoBotCommandsNamespace
 
             var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
 
-            //just  generate random number and set that num to ppnum
-            string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" };
-            Random rand = new Random();
-            int RandomID = rand.Next(1, 11); //Under the assumption that ^ comment is what this means
-            int ppnum = RandomID;
-            ulong CLIENTID = MentionUtils.ParseUser(args);
-            if (pp.ppsize.ContainsKey(CLIENTID))
+            //just generate random number and set that num to ppnum
+            string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" }; //All the different penises that it can send.
+            Random rand = new Random(); //Creates a random veriable
+            int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
+            int ppnum = RandomID; //Saves the RandomID to ppnum.
+            if (args.Length == 0)
             {
-                ppnum = pp.ppsize[CLIENTID];
+                ulong authorid = Context.User.Id;
+                if (pp.ppsize.ContainsKey(authorid))
+                {
+                    ppnum = pp.ppsize[authorid];
+                }
+                else
+                {
+                    pp.ppsize.Add(authorid, ppnum);
+                    File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
+                }
+                await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
             }
-            else
+            if (args.Length == 1)
             {
-                pp.ppsize.Add(CLIENTID, ppnum);
-                File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
+                ulong CLIENTID = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to ClientID
+                if (pp.ppsize.ContainsKey(CLIENTID))
+                {
+                    ppnum = pp.ppsize[CLIENTID];
+                }
+                else
+                {
+                    pp.ppsize.Add(CLIENTID, ppnum);
+                    File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
+                }
+                await ReplyAsync($"{args[0]}'s penis size is {penisquotes[ppnum]}");
             }
-            await ReplyAsync($"{args} penis size is {penisquotes[ppnum]}");
+            if (args.Length > 2 | args.Length == 2)
+            {
+                await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
+            }
         }
+
+
         [Command("8ball")]
         private async Task eightball()
         {
@@ -121,42 +147,46 @@ namespace MangoBotCommandsNamespace
             await ReplyAsync($"{eightballquotes[index]}");
         }
         [Command("slap")]
-        private async Task slap(string args)
+        private async Task slap(params string[] args)
         {
-            if (args.Contains("@"))
+            if (args.Length > 2 | args.Length == 2)
             {
-                if (args.Contains(" "))
+                await ReplyAsync("Only mention one user!");
+            }
+            if (args.Length == 0)
+            {
+                await ReplyAsync($"<@{Context.User.Id}>... Slapped themself?");
+            }
+            if (args.Length == 1)
+            {
+                if (args[0].Contains("@"))
                 {
-                    await ReplyAsync("Only mention one user!"); //Doesn't work because the command handler is a tad wonky
-                }
-                else
-                {
-                    string[] listofslaps = { $"<@{Context.User.Id}> just slapped {args}!", $"<@{Context.User.Id}> slaps {args} around with a large trout!" };
+                    string[] listofslaps = { $"<@{Context.User.Id}> just slapped {args[0]}!", $"<@{Context.User.Id}> slaps {args[0]} around with a large trout!" };
                     Random rand = new Random();
                     int index = rand.Next(listofslaps.Length);
                     await ReplyAsync($"{listofslaps[index]}");
                 }
-            }
-            else
-            {
-                await ReplyAsync("You need to mention someone to slap them!");
+                else
+                {
+                    await ReplyAsync("You need to mention someone to slap them!");
+                }
             }
         }
         [Command("joke")]
         [Alias("dadjoke")]
         [Summary("Tells a dad joke!")]
-        private async Task joke()
+        private async Task joke(params string[] args)
         {
             HttpResponse<string> response = Unirest.get("https://icanhazdadjoke.com/")
-              .header("User-Agent", "MangoBot lXxMangoxXl@gmail.com (Github coming soon)")
-              .header("Accept", "text/plain")
-              .asString();
+            .header("User-Agent", "MangoBot lXxMangoxXl@gmail.com (Github coming soon)")
+            .header("Accept", "text/plain")
+            .asString();
             await ReplyAsync(response.Body.ToString());
         }
         [Command("todo")]
-        private async Task todo()
+        private async Task todo(params string[] args)
         {
-            await ReplyAsync("**1.** Edit command handler for better error messages.");
+            await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**");
         }
     }
 }

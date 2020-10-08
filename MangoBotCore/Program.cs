@@ -1,13 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using MangoBotCommandsNamespace;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using MangoBotCommandsNamespace;
 
 namespace MangoBotStartup
 {
