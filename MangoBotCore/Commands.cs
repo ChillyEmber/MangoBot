@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using MangoBotStartup;
+using Microsoft.VisualBasic;
 using Mono.Options;
 using Newtonsoft.Json;
 using Spectacles.NET.Types;
@@ -20,10 +21,8 @@ namespace MangoBotCommandsNamespace
     }
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        //Some Strings that need to be changed per-bot owner
         private ulong DiscordBotOwner = 287778194977980416; // REPLACE WITH CURRENT BOT OWNER USERID
         private BotConfig config;
-
 
         [Command("ping")]
         private async Task Ping(params string[] args)
@@ -75,7 +74,8 @@ namespace MangoBotCommandsNamespace
                 $"**ping:** *Sends the ping of the discord bot.*\n" +
                 $"**slap @user:** *Slaps specified user.*\n" +
                 $"**joke:** *Tells a dad joke!*\n" +
-                $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n");
+                $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
+                $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*");
         }
         [Command("penis")]
         private async Task penis(params string[] args)
@@ -190,19 +190,17 @@ namespace MangoBotCommandsNamespace
             }
             if(args.Length == 1)
             {
-                if(args[0].Contains("@"))
+                ulong ulonguserid = Convert.ToUInt64(args[0]);
+                if (args[0].Contains("@"))
                 {
                     ulong userid = MentionUtils.ParseUser(args[0]);
-                    await ReplyAsync($"Testing that this actually still works, UserID is {userid}");
-                }
-                /*if (args[0].Contains(Discord.IUserGuild())
-                {
-                    var user = await RestUserGuild(args[0]);
+                    Discord.WebSocket.SocketUser user = Program._client.GetUser(userid);
+                    await ReplyAsync($"<@{userid}>'s avatar is {user.GetAvatarUrl()}");
                 }
                 else
                 {
                     await ReplyAsync("You have to mention someone to get their avatar!");
-                }*/
+                }
             }
             if(args.Length == 2 | args.Length > 2)
             {

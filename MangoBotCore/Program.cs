@@ -30,7 +30,6 @@ namespace MangoBotStartup
         {
             _client = new DiscordSocketClient(); // Define _client
             _commands = new CommandService(); // Define _commands
-
             _services = new ServiceCollection() // Define _services
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
@@ -43,7 +42,8 @@ namespace MangoBotStartup
                 {
                     prefix = "^",
                     token = "",
-                    game = ""
+                    game = "",
+                    botowner = ""
                 };
                 File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
             }
@@ -60,6 +60,8 @@ namespace MangoBotStartup
             string botToken = config.token; // Make a string for the token
 
             string prefix = config.prefix;
+
+            string botowner = config.botowner;
 
             _client.Log += Log; // Logging
 
@@ -121,6 +123,7 @@ namespace MangoBotStartup
         public string token { get; set; }
         public string prefix { get; set; }
         public string game { get; set; }
+        public string botowner { get; set; }
     }
 
 }
