@@ -1,9 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 using MangoBotStartup;
 using Mono.Options;
 using Newtonsoft.Json;
+using Spectacles.NET.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +22,6 @@ namespace MangoBotCommandsNamespace
     {
         //Some Strings that need to be changed per-bot owner
         private ulong DiscordBotOwner = 287778194977980416; // REPLACE WITH CURRENT BOT OWNER USERID
-        public string prefixx = "^"; //REPLACE WITH CURRENT PREFIX (ALSO MUST BE CHANGED IN CONFIG)
         private BotConfig config;
 
 
@@ -50,22 +51,11 @@ namespace MangoBotCommandsNamespace
             }
         }
         [Command("status")]
-        private async Task status(params string[] args)
+        private async Task status([Remainder]string args)
         {
             if (Context.User.Id == DiscordBotOwner)
             {
-                if (args.Length == 0)
-                {
-                    await Program._client.SetGameAsync("");
-                }
-                if (args.Length == 1)
-                {
-                    await Program._client.SetGameAsync($"{args[0]}");
-                }
-                if (args.Length == 2 | args.Length > 2)
-                {
-                    await ReplyAsync("You can't set more than one status!");
-                }
+                await Program._client.SetGameAsync($"{args}");
             }
             else
             {
@@ -76,8 +66,9 @@ namespace MangoBotCommandsNamespace
         private async Task help()
         {
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
+            string prefix = config.prefix;
             await ReplyAsync($"**Commands:**\n" +
-                $"***Current Prefix is {prefixx}***\n" +
+                $"***Current Prefix is {prefix}***\n" +
                 $"**Help:** *Displays this command.*\n" +
                 $"**penis:** *Generates a penis size for the mentioned user.*\n" +
                 $"**8ball:** *Read the future with this 8ball command!*\n" +
@@ -187,6 +178,36 @@ namespace MangoBotCommandsNamespace
         private async Task todo(params string[] args)
         {
             await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**");
+        }
+        [Command("avatar")]
+        [Alias("pfp")]
+        private async Task avatar(params string[] args)
+        {
+            if(args.Length == 0)
+            {
+                string avatarurl = Context.User.GetAvatarUrl();
+                await ReplyAsync($"Heres your avatar! {avatarurl}");
+            }
+            if(args.Length == 1)
+            {
+                if(args[0].Contains("@"))
+                {
+                    ulong userid = MentionUtils.ParseUser(args[0]);
+                    await ReplyAsync($"Testing that this actually still works, UserID is {userid}");
+                }
+                /*if (args[0].Contains(Discord.IUserGuild())
+                {
+                    var user = await RestUserGuild(args[0]);
+                }
+                else
+                {
+                    await ReplyAsync("You have to mention someone to get their avatar!");
+                }*/
+            }
+            if(args.Length == 2 | args.Length > 2)
+            {
+                await ReplyAsync("Mention only one user!");
+            }
         }
     }
 }
