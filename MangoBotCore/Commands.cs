@@ -21,8 +21,8 @@ namespace MangoBotCommandsNamespace
     }
     public class Commands : ModuleBase<SocketCommandContext>
     {
-        private ulong DiscordBotOwner = 287778194977980416; // REPLACE WITH CURRENT BOT OWNER USERID
         private BotConfig config;
+        private ulong DiscordBotOwner = 287778194977980416; // REPLACE WITH CURRENT BOT OWNER USERID
 
         [Command("ping")]
         private async Task Ping(params string[] args)
@@ -68,13 +68,14 @@ namespace MangoBotCommandsNamespace
             string prefix = config.prefix;
             await ReplyAsync($"**Commands:**\n" +
                 $"***Current Prefix is {prefix}***\n" +
-                $"**Help:** *Displays this command.*\n" +
+                $"**help:** *Displays this command.*\n" +
+                $"**about:** *Displays some information about the bot!*\n" +
+                $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
                 $"**penis:** *Generates a penis size for the mentioned user.*\n" +
                 $"**8ball:** *Read the future with this 8ball command!*\n" +
                 $"**ping:** *Sends the ping of the discord bot.*\n" +
                 $"**slap @user:** *Slaps specified user.*\n" +
                 $"**joke:** *Tells a dad joke!*\n" +
-                $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
                 $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*");
         }
         [Command("penis")]
@@ -169,7 +170,7 @@ namespace MangoBotCommandsNamespace
         private async Task joke(params string[] args)
         {
             HttpResponse<string> response = Unirest.get("https://icanhazdadjoke.com/")
-            .header("User-Agent", "MangoBot lXxMangoxXl@gmail.com (Github coming soon)")
+            .header("User-Agent", "MangoBot https://github.com/lXxMangoxXl/MangoBot")
             .header("Accept", "text/plain")
             .asString();
             await ReplyAsync(response.Body.ToString());
@@ -206,6 +207,13 @@ namespace MangoBotCommandsNamespace
             {
                 await ReplyAsync("Mention only one user!");
             }
+        }
+        [Command("about")]
+        private async Task about()
+        {
+            await ReplyAsync("Made by lXxMangoxXl#8878\n" +
+                "https://github.com/lXxMangoxXl/MangoBot/ \n" +
+                "Made with Discord.Net, C#, and lots of love!");
         }
     }
 }
