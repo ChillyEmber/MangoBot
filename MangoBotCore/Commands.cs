@@ -76,7 +76,8 @@ namespace MangoBotCommandsNamespace
                 $"**ping:** *Sends the ping of the discord bot.*\n" +
                 $"**slap @user:** *Slaps specified user.*\n" +
                 $"**joke:** *Tells a dad joke!*\n" +
-                $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*");
+                $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
+                $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*");
         }
         [Command("penis")]
         private async Task penis(params string[] args)
@@ -210,6 +211,32 @@ namespace MangoBotCommandsNamespace
                 }
             }
             if(args.Length == 2 | args.Length > 2)
+            {
+                await ReplyAsync("Mention only one user!");
+            }
+        }
+        [Command("defaultavatar")]
+        [Alias("defaultpfp")]
+        private async Task defaultavatar(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync($"Heres your default avatar! {Context.User.GetDefaultAvatarUrl()}");
+            }
+            if (args.Length == 1)
+            {
+                if (args[0].Contains("@"))
+                {
+                    ulong userid = MentionUtils.ParseUser(args[0]);
+                    SocketUser user = Program._client.GetUser(userid);
+                    await ReplyAsync($"<@{userid}>'s avatar is {user.GetAvatarUrl()}");
+                }
+                else
+                {
+                    await ReplyAsync("You have to mention someone to get their avatar!");
+                }
+            }
+            if (args.Length == 2 | args.Length > 2)
             {
                 await ReplyAsync("Mention only one user!");
             }
