@@ -191,12 +191,18 @@ namespace MangoBotCommandsNamespace
             }
             if(args.Length == 1)
             {
-                ulong ulonguserid = Convert.ToUInt64(args[0]);
                 if (args[0].Contains("@"))
                 {
                     ulong userid = MentionUtils.ParseUser(args[0]);
-                    Discord.WebSocket.SocketUser user = Program._client.GetUser(userid);
-                    await ReplyAsync($"<@{userid}>'s avatar is {user.GetAvatarUrl()}");
+                    SocketUser user = Program._client.GetUser(userid);
+                    if(user.GetAvatarUrl() == null)
+                    {
+                        await ReplyAsync($"<@{userid}>'s avatar is {user.GetDefaultAvatarUrl()}");
+                    }
+                    else
+                    {
+                        await ReplyAsync($"<@{userid}>'s avatar is {user.GetAvatarUrl()}");
+                    }
                 }
                 else
                 {
