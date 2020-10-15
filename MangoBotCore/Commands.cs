@@ -229,7 +229,7 @@ namespace MangoBotCommandsNamespace
                 {
                     ulong userid = MentionUtils.ParseUser(args[0]);
                     SocketUser user = Program._client.GetUser(userid);
-                    await ReplyAsync($"<@{userid}>'s avatar is {user.GetAvatarUrl()}");
+                    await ReplyAsync($"<@{userid}>'s avatar is {user.GetDefaultAvatarUrl()}");
                 }
                 else
                 {
