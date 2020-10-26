@@ -80,7 +80,8 @@ namespace MangoBotCommandsNamespace
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n";
             if(Context.Guild.Id == 687875961995132973)
             {
-                await ReplyAsync(CommandsList + "**minecraft:** *Sends the current IP of the minecraft server*");
+                await ReplyAsync(CommandsList + "**minecraft:** *Sends the current IP of the minecraft server*\n" +
+                    "**appeal:** *Sends a invite link to the appeal discord*");
             }
             else
             {
@@ -283,6 +284,18 @@ namespace MangoBotCommandsNamespace
             if (Context.Guild.Id == 687875961995132973)
             {
                 await ReplyAsync("The server IP is `mc.unlimitedscp.com`");
+            }
+            else
+            {
+                await ReplyAsync("That's a Unlimited SCP only command!");
+            }
+        }
+        [Command("appeal")]
+        private async Task appeal()
+        {
+            if (Context.Guild.Id == 687875961995132973)
+            {
+                await ReplyAsync("https://discord.gg/gfCvJ3d");
             }
             else
             {
