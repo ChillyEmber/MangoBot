@@ -57,7 +57,7 @@ namespace MangoBotCommandsNamespace
             }
             else
             {
-                await ReplyAsync("You aren't the owner silly!");
+                //await ReplyAsync("You aren't the owner silly!");
             }
         }
         [Command("help")]
@@ -199,7 +199,7 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -247,7 +247,7 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -287,7 +287,7 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -345,6 +345,7 @@ namespace MangoBotCommandsNamespace
             }
         }
         [Command("appeal")]
+        [Alias("appeals")]
         private async Task appeal()
         {
             //If you're in Unlimited, send the invite, if you aren't, spit out a generic error message.
@@ -396,6 +397,12 @@ namespace MangoBotCommandsNamespace
             {
                 await ReplyAsync("You have to be either River or Mango to execute this command!");
             }
+        }
+        [Command("brazil")]
+        [Summary("Send someone to brazil.")]
+        private async Task brazil()
+        {
+            await ReplyAsync("https://media1.tenor.com/images/d632412aaffe388de314b7abff9c408e/tenor.gif?itemid=17781004");
         }
     }
 }
