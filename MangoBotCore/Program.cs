@@ -18,22 +18,25 @@ namespace MangoBotStartup
             new Program().RunBot().GetAwaiter().GetResult();
         }
 
+
         // Creating the necessary variables
         public static DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
-
         private BotConfig config;
 
         // Runbot task
         public async Task RunBot()
         {
+
             _client = new DiscordSocketClient(); // Define _client
             _commands = new CommandService(); // Define _commands
             _services = new ServiceCollection() // Define _services
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
+
+
 
             // Config creation/reading.
             if (!File.Exists("config.json"))
@@ -43,7 +46,8 @@ namespace MangoBotStartup
                     prefix = "^",
                     token = "",
                     game = "",
-                    botowner = ""
+                    botowner = "",
+                    disabledpenis = "1"
                 };
                 File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
             }
@@ -56,10 +60,11 @@ namespace MangoBotStartup
                 File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(new PPSize()));
             }
 
-
             string botToken = config.token; // Make a string for the token
 
             string prefix = config.prefix;
+
+            string disabledpenis = config.disabledpenis;
 
             //ulong botowner = config.botowner;
 
@@ -118,12 +123,13 @@ namespace MangoBotStartup
 
 
 
-    class BotConfig
+    public class BotConfig
     {
         public string token { get; set; }
         public string prefix { get; set; }
         public string game { get; set; }
         public string botowner { get; set; }
+        public string disabledpenis { get; set; }
     }
 
 }
