@@ -66,18 +66,26 @@ namespace MangoBotCommandsNamespace
         {
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             string prefix = config.prefix;
-            await ReplyAsync($"**Commands:**\n" +
-                $"***Current Prefix is {prefix}***\n" +
-                $"**help:** *Displays this command.*\n" +
-                $"**about:** *Displays some information about the bot!*\n" +
-                $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
-                $"**penis:** *Generates a penis size for the mentioned user.*\n" +
-                $"**8ball:** *Read the future with this 8ball command!*\n" +
-                $"**ping:** *Sends the ping of the discord bot.*\n" +
-                $"**slap @user:** *Slaps specified user.*\n" +
-                $"**joke:** *Tells a dad joke!*\n" +
-                $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-                $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*");
+            string CommandsList = $"**Commands:**\n" +
+    $"***Current Prefix is {prefix}***\n" +
+    $"**help:** *Displays this command.*\n" +
+    $"**about:** *Displays some information about the bot!*\n" +
+    $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
+    $"**penis:** *Generates a penis size for the mentioned user.*\n" +
+    $"**8ball:** *Read the future with this 8ball command!*\n" +
+    $"**ping:** *Sends the ping of the discord bot.*\n" +
+    $"**slap @user:** *Slaps specified user.*\n" +
+    $"**joke:** *Tells a dad joke!*\n" +
+    $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
+    $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n";
+            if(Context.Guild.Id == 687875961995132973)
+            {
+                await ReplyAsync(CommandsList + "**minecraft:** *Sends the current IP of the minecraft server*");
+            }
+            else
+            {
+                await ReplyAsync(CommandsList);
+            }
         }
         [Command("penis")]
         private async Task penis(params string[] args)
@@ -137,7 +145,14 @@ namespace MangoBotCommandsNamespace
             "Yes.", "Yes - definitely.", "You may rely on it"};
             Random rand = new Random();
             int index = rand.Next(eightballquotes.Length);
-            await ReplyAsync($"{eightballquotes[index]}");
+            if(args.Length == 0)
+            {
+                await ReplyAsync("You have to say something in order to recieve a prediction!");
+            }
+            else
+            {
+                await ReplyAsync($"{eightballquotes[index]}");
+            }
         }
         [Command("slap")]
         private async Task slap(params string[] args)
@@ -241,12 +256,38 @@ namespace MangoBotCommandsNamespace
                 await ReplyAsync("Mention only one user!");
             }
         }
+        [Command("say")]
+        private async Task say([Remainder] string args)
+        {
+            await Context.Message.DeleteAsync();
+            if(Context.User.Id == DiscordBotOwner)
+            {
+                await ReplyAsync(args);
+            }
+            else
+            {
+                await ReplyAsync("You must be the bot owner to execute the command!");
+            }
+        }
+
         [Command("about")]
         private async Task about()
         {
             await ReplyAsync("Made by lXxMangoxXl#8878\n" +
                 "https://github.com/lXxMangoxXl/MangoBot/ \n" +
                 "Made with Discord.Net, C#, and lots of love!");
+        }
+        [Command("minecraft")]
+        private async Task minecraft()
+        {
+            if (Context.Guild.Id == 687875961995132973)
+            {
+                await ReplyAsync("The server IP is `mc.unlimitedscp.com`");
+            }
+            else
+            {
+                await ReplyAsync("That's a Unlimited SCP only command!");
+            }
         }
     }
 }
