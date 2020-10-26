@@ -189,21 +189,21 @@ namespace MangoBotCommandsNamespace
         [Command("slap")]
         private async Task slap(params string[] args)
         {
-            if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+            if (args.Length > 2 | args.Length == 2)
             {
-                await ReplyAsync("Tsk Tsk");
+                await ReplyAsync("Only mention one user!");
             }
-            else
+            if (args.Length == 0)
             {
-                if (args.Length > 2 | args.Length == 2)
+                await ReplyAsync($"<@{Context.User.Id}>... Slapped themself?");
+            }
+            if (args.Length == 1)
+            {
+                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
                 {
-                    await ReplyAsync("Only mention one user!");
+                    await ReplyAsync("Tsk Tsk");
                 }
-                if (args.Length == 0)
-                {
-                    await ReplyAsync($"<@{Context.User.Id}>... Slapped themself?");
-                }
-                if (args.Length == 1)
+                else
                 {
                     if (args[0].Contains("@"))
                     {
@@ -240,18 +240,18 @@ namespace MangoBotCommandsNamespace
         [Alias("pfp")]
         private async Task avatar(params string[] args)
         {
-            if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+            if (args.Length == 0)
             {
-                await ReplyAsync("Tsk Tsk");
+                string avatarurl = Context.User.GetAvatarUrl();
+                await ReplyAsync($"Heres your avatar! {avatarurl}");
             }
-            else
+            if (args.Length == 1)
             {
-                if (args.Length == 0)
+                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
                 {
-                    string avatarurl = Context.User.GetAvatarUrl();
-                    await ReplyAsync($"Heres your avatar! {avatarurl}");
+                    await ReplyAsync("Tsk Tsk");
                 }
-                if (args.Length == 1)
+                else
                 {
                     if (args[0].Contains("@"))
                     {
@@ -271,27 +271,27 @@ namespace MangoBotCommandsNamespace
                         await ReplyAsync("You have to mention someone to get their avatar!");
                     }
                 }
-                if (args.Length == 2 | args.Length > 2)
-                {
-                    await ReplyAsync("Mention only one user!");
-                }
+            }
+            if (args.Length == 2 | args.Length > 2)
+            {
+                await ReplyAsync("Mention only one user!");
             }
         }
         [Command("defaultavatar")]
         [Alias("defaultpfp")]
         private async Task defaultavatar(params string[] args)
         {
-            if (args[1].Contains("@everyone") | args[1].Contains("@here"))
+            if (args.Length == 0)
             {
-                await ReplyAsync("Tsk Tsk");
+                await ReplyAsync($"Heres your default avatar! {Context.User.GetDefaultAvatarUrl()}");
             }
-            else
+            if (args.Length == 1)
             {
-                if (args.Length == 0)
+                if (args[1].Contains("@everyone") | args[1].Contains("@here"))
                 {
-                    await ReplyAsync($"Heres your default avatar! {Context.User.GetDefaultAvatarUrl()}");
+                    await ReplyAsync("Tsk Tsk");
                 }
-                if (args.Length == 1)
+                else
                 {
                     if (args[0].Contains("@"))
                     {
@@ -304,10 +304,10 @@ namespace MangoBotCommandsNamespace
                         await ReplyAsync("You have to mention someone to get their avatar!");
                     }
                 }
-                if (args.Length == 2 | args.Length > 2)
-                {
-                    await ReplyAsync("Mention only one user!");
-                }
+            }
+            if (args.Length == 2 | args.Length > 2)
+            {
+                await ReplyAsync("Mention only one user!");
             }
         }
         [Command("say")]
