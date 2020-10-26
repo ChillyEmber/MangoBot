@@ -87,87 +87,45 @@ namespace MangoBotCommandsNamespace
                 await ReplyAsync(CommandsList);
             }
         }
+
         [Command("penis")]
         private async Task penis(params string[] args)
         {
-            //State config.disabledpenis
-            bool setpenison = true;
-            config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-            string disabledpenis = config.disabledpenis;
+            /*string[] penisquotes = { "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D"};
+            Random rand = new Random();
+            int index = rand.Next(penisquotes.Length);
+            await ReplyAsync($"{args}'s penis length is {penisquotes[index]}");*/
 
-            //Checks to see if penis command is disabled
-            if (config.disabledpenis == "1")
-            {
-                //Checks if it's Unlimited
-                if (Context.Guild.Id == 687875961995132973)
-                {
-                    await ReplyAsync("Penis commands have been disabled, sorry!");
-                    setpenison = false;
-                }
-                //If it isn't unlimited, it'll let you through
-                else
-                {
-                    setpenison = true;
-                }
-            }
-            //If it isn't, follow through.
-            if (setpenison == true)
-            {
-                /*string[] penisquotes = { "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D"};
-                Random rand = new Random();
-                int index = rand.Next(penisquotes.Length);
-                await ReplyAsync($"{args}'s penis length is {penisquotes[index]}");*/
+            var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
 
-                var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
-
-                //just generate random number and set that num to ppnum
-                string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" }; //All the different penises that it can send.
-                Random rand = new Random(); //Creates a random veriable
-                int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
-                int ppnum = RandomID; //Saves the RandomID to ppnum.
-                if (args.Length == 0)
-                {
-                    ulong authorid = Context.User.Id;
-                    if (pp.ppsize.ContainsKey(authorid))
-                    {
-                        ppnum = pp.ppsize[authorid];
-                    }
-                    else
-                    {
-                        pp.ppsize.Add(authorid, ppnum);
-                        File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
-                    }
-                    await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
-                }
-                if (args.Length == 1)
-                {
-                    if (args[0].Contains("@everyone") | args[0].Contains("@here"))
-                    {
-                        await ReplyAsync("Tsk Tsk");
-                    }
-                    else
-                    {
-                        ulong CLIENTID = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to ClientID
-                        if (pp.ppsize.ContainsKey(CLIENTID))
-                        {
-                            ppnum = pp.ppsize[CLIENTID];
-                        }
-                        else
-                        {
-                            pp.ppsize.Add(CLIENTID, ppnum);
-                            File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
-                        }
-                        await ReplyAsync($"{Program._client.GetUser(CLIENTID)}'s penis size is {penisquotes[ppnum]}");
-                    }
-                }
-                if (args.Length > 2 | args.Length == 2)
-                {
+            //just generate random number and set that num to ppnum
+            string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" }; //All the different penises that it can send.
+            Random rand = new Random(); //Creates a random veriable
+            int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
+            int ppnum = RandomID; //Saves the RandomID to ppnum.
+            
+            ulong ppUserId;
+            
+            switch (args.Length) {
+                case 0:
+                    ppUserId = Context.User.Id;
+                    break;
+                case 1:
+                    ppUserId = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to ClientID
+                    break;
+                default:
                     await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
-                }
-                setpenison = false;
+                    return;
             }
-        }
 
+            if (pp.ppsize.ContainsKey(ppUserId)) {
+                ppnum = pp.ppsize[ppUserId];
+            } else {
+                pp.ppsize.Add(ppUserId, ppnum);
+                File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
+            }
+            await ReplyAsync($"<@{ppUserId}>'s penis size is {penisquotes[ppnum]}");
+        }
 
         [Command("8ball")]
         private async Task eightball(params string[] args)
