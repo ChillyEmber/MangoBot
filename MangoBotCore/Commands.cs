@@ -103,38 +103,28 @@ namespace MangoBotCommandsNamespace
             Random rand = new Random(); //Creates a random veriable
             int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
             int ppnum = RandomID; //Saves the RandomID to ppnum.
-            if (args.Length == 0)
-            {
-                ulong authorid = Context.User.Id;
-                if (pp.ppsize.ContainsKey(authorid))
-                {
-                    ppnum = pp.ppsize[authorid];
-                }
-                else
-                {
-                    pp.ppsize.Add(authorid, ppnum);
-                    File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
-                }
-                await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
+            
+            ulong ppUserId;
+            
+            switch (args.Length()) {
+                case 0:
+                     ppUserId = Context.User.Id;
+                     break;
+                 case 1:
+                     ppUserId = MentionUtils.ParseUser(args[0]);
+                     break;
+                default:
+                     await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");   
+                     return;
             }
-            if (args.Length == 1)
-            {
-                ulong CLIENTID = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to ClientID
-                if (pp.ppsize.ContainsKey(CLIENTID))
-                {
-                    ppnum = pp.ppsize[CLIENTID];
-                }
-                else
-                {
-                    pp.ppsize.Add(CLIENTID, ppnum);
-                    File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
-                }
-                await ReplyAsync($"{args[0]}'s penis size is {penisquotes[ppnum]}");
+            
+            if (pp.ppsize.ContainsKey(authorid)) {
+                ppnum = pp.ppsize[authorid];
+            } else {
+                pp.ppsize.Add(authorid, ppnum);
+                File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
             }
-            if (args.Length > 2 | args.Length == 2)
-            {
-                await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
-            }
+            await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
         }
 
 
