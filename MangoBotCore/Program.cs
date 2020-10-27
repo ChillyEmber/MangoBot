@@ -115,7 +115,7 @@ namespace MangoBotStartup
                         int reply = rand.Next(replies.Length); //Select one of the two options that it can pick from
                         await message.Channel.SendMessageAsync(replies[reply]);
                     }*/
-                    await message.Channel.SendMessageAsync(result.ErrorReason);
+                    //await message.Channel.SendMessageAsync(result.ErrorReason);
                 }
             }
         }
