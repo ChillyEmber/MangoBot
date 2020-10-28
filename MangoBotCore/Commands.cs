@@ -95,7 +95,8 @@ namespace MangoBotCommandsNamespace
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             string disabledpenis = config.disabledpenis;
 
-            if (config.disabledpenis == "1" && Context.Guild.Id == 687875961995132973) {
+            if (config.disabledpenis == "1" && Context.Guild.Id == 687875961995132973) 
+            {
                 // If pp command is disabled, and the guild is Unlimited it will return.
                 await ReplyAsync("Penis commands have been disabled, sorry!");
                 return;
@@ -111,7 +112,8 @@ namespace MangoBotCommandsNamespace
 
             ulong ppUserId;
 
-            switch (args.Length) {
+            switch (args.Length) 
+            {
                 case 0:
                     ppUserId = Context.User.Id;
                     break;
@@ -123,9 +125,12 @@ namespace MangoBotCommandsNamespace
                     return;
             }
 
-            if (pp.ppsize.ContainsKey(ppUserId)) {
+            if (pp.ppsize.ContainsKey(ppUserId)) 
+            {
                 ppnum = pp.ppsize[ppUserId];
-            } else {
+            } 
+            else 
+            {
                 pp.ppsize.Add(ppUserId, ppnum);
                 File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
             }
