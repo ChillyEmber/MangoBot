@@ -28,26 +28,6 @@ namespace MangoBotCommandsNamespace
         {
             await ReplyAsync("Pong! 🏓 **" + Program._client.Latency + "ms**");
         }
-        [Command("stinky")]
-        private async Task Dylan(ulong args)
-        {
-            if (Context.User.Id == DiscordBotOwner)
-            {
-                int stinky = 0;
-                while (stinky < 6)
-                {
-                    SocketUser user = Program._client.GetUser(args);
-                    await user.GetOrCreateDMChannelAsync();
-                    await user.SendMessageAsync("Hey Stinky");
-                    stinky = stinky + 1;
-                }
-                await ReplyAsync("Done!");
-            }
-            else
-            {
-                await ReplyAsync("You're not the owner, you're the stinky one!");
-            }
-        }
         [Command("status")]
         private async Task status([Remainder] string args)
         {
@@ -77,7 +57,7 @@ namespace MangoBotCommandsNamespace
     $"**joke:** *Tells a dad joke!*\n" +
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n";
-            if (Context.Guild.Id == 687875961995132973)
+            if (Context.Channel.Name != Context.User.Username && Context.Guild.Id == 687875961995132973)
             {
                 await ReplyAsync(CommandsList + "**minecraft:** *Sends the current IP of the minecraft server*\n" +
                     "**appeal:** *Sends a invite link to the appeal discord*");
@@ -91,27 +71,32 @@ namespace MangoBotCommandsNamespace
         private async Task penis(params string[] args)
         {
             //State config.disabledpenis
-            bool setpenison = true;
+            bool runpeniscommand;
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-            string disabledpenis = config.disabledpenis;
+            //string disabledpenis = config.disabledpenis;
 
             //Checks to see if penis command is disabled
             if (config.disabledpenis == "1")
             {
                 //Checks if it's Unlimited
-                if (Context.Guild.Id == 687875961995132973)
+                if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
                 {
                     await ReplyAsync("Penis commands have been disabled, sorry!");
-                    setpenison = false;
+                    runpeniscommand = false;
                 }
                 //If it isn't unlimited, it'll let you through
                 else
                 {
-                    setpenison = true;
+                    runpeniscommand = true;
                 }
             }
-            //If it isn't, follow through.
-            if (setpenison == true)
+            else //If off in configs, send it through.
+            {
+                runpeniscommand = true;
+            }
+
+            //If the checks went through, and 
+            if (runpeniscommand == true)
             {
                 /*string[] penisquotes = { "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D"};
                 Random rand = new Random();
@@ -125,7 +110,7 @@ namespace MangoBotCommandsNamespace
                 Random rand = new Random(); //Creates a random veriable
                 int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
                 int ppnum = RandomID; //Saves the RandomID to ppnum.
-                if (args.Length == 0)
+                if (args.Length == 0) // If there isn't any mentioned users.
                 {
                     ulong authorid = Context.User.Id;
                     if (pp.ppsize.ContainsKey(authorid))
@@ -139,32 +124,31 @@ namespace MangoBotCommandsNamespace
                     }
                     await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
                 }
-                if (args.Length == 1)
+                if (args.Length == 1) //If theres one mentioned user.
                 {
-                    if (args[0].Contains("@everyone") | args[0].Contains("@here"))
+                    if (args[0].Contains("@everyone") | args[0].Contains("@here")) //Checking for any everyone or here pings.
                     {
                         await ReplyAsync("Tsk Tsk");
                     }
                     else
                     {
-                        ulong CLIENTID = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to ClientID
-                        if (pp.ppsize.ContainsKey(CLIENTID))
+                        ulong UserID = MentionUtils.ParseUser(args[0]); //Takes the UserID from mention and saves it to UserID
+                        if (pp.ppsize.ContainsKey(UserID))
                         {
-                            ppnum = pp.ppsize[CLIENTID];
+                            ppnum = pp.ppsize[UserID];
                         }
                         else
                         {
-                            pp.ppsize.Add(CLIENTID, ppnum);
+                            pp.ppsize.Add(UserID, ppnum);
                             File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
                         }
-                        await ReplyAsync($"{Program._client.GetUser(CLIENTID)}'s penis size is {penisquotes[ppnum]}");
+                        await ReplyAsync($"{Program._client.GetUser(UserID).Username}'s penis size is {penisquotes[ppnum]}");
                     }
                 }
-                if (args.Length > 2 | args.Length == 2)
+                if (args.Length > 2 | args.Length == 2) //If theres more than one argument
                 {
                     await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
                 }
-                setpenison = false;
             }
         }
 
@@ -208,7 +192,7 @@ namespace MangoBotCommandsNamespace
                     if (args[0].Contains("@"))
                     {
                         ulong CLIENTID = MentionUtils.ParseUser(args[0]);
-                        string[] listofslaps = { $"<@{Context.User.Id}> just slapped {Program._client.GetUser(CLIENTID)}!", $"<@{Context.User.Id}> slaps {Program._client.GetUser(CLIENTID)} around with a large trout!" };
+                        string[] listofslaps = { $"<@{Context.User.Id}> just slapped {Program._client.GetUser(CLIENTID).Username}!", $"<@{Context.User.Id}> slaps {Program._client.GetUser(CLIENTID).Username} around with a large trout!" };
                         Random rand = new Random();
                         int index = rand.Next(listofslaps.Length);
                         await ReplyAsync($"{listofslaps[index]}");
@@ -259,11 +243,11 @@ namespace MangoBotCommandsNamespace
                         SocketUser user = Program._client.GetUser(userid);
                         if (user.GetAvatarUrl() == null)
                         {
-                            await ReplyAsync($"{Program._client.GetUser(userid)}'s avatar is {user.GetDefaultAvatarUrl()}");
+                            await ReplyAsync($"{Program._client.GetUser(userid).Username}'s avatar is {user.GetDefaultAvatarUrl()}");
                         }
                         else
                         {
-                            await ReplyAsync($"{Program._client.GetUser(userid)}'s avatar is {user.GetAvatarUrl()}");
+                            await ReplyAsync($"{Program._client.GetUser(userid).Username}'s avatar is {user.GetAvatarUrl()}");
                         }
                     }
                     else
@@ -297,7 +281,7 @@ namespace MangoBotCommandsNamespace
                     {
                         ulong userid = MentionUtils.ParseUser(args[0]);
                         SocketUser user = Program._client.GetUser(userid);
-                        await ReplyAsync($"{Program._client.GetUser(userid)}'s avatar is {user.GetDefaultAvatarUrl()}");
+                        await ReplyAsync($"{Program._client.GetUser(userid).Username}'s avatar is {user.GetDefaultAvatarUrl()}");
                     }
                     else
                     {
@@ -313,7 +297,10 @@ namespace MangoBotCommandsNamespace
         [Command("say")]
         private async Task say([Remainder] string args)
         {
-            await Context.Message.DeleteAsync();
+            if(!Context.IsPrivate)
+            {
+                await Context.Message.DeleteAsync();
+            }
             if (Context.User.Id == DiscordBotOwner)
             {
                 await ReplyAsync(args);
@@ -335,7 +322,7 @@ namespace MangoBotCommandsNamespace
         private async Task minecraft()
         {
             //If you're in Unlimited, send the game address, if you aren't, spit out a generic error message.
-            if (Context.Guild.Id == 687875961995132973)
+            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
             {
                 await ReplyAsync("The server IP is `mc.unlimitedscp.com`");
             }
@@ -349,9 +336,9 @@ namespace MangoBotCommandsNamespace
         private async Task appeal()
         {
             //If you're in Unlimited, send the invite, if you aren't, spit out a generic error message.
-            if (Context.Guild.Id == 687875961995132973)
+            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
             {
-                await ReplyAsync("https://discord.gg/gfCvJ3d");
+                await ReplyAsync($"The appeal URL is https://discord.gg/gfCvJ3d");
             }
             else
             {
@@ -404,5 +391,45 @@ namespace MangoBotCommandsNamespace
         {
             await ReplyAsync("https://media1.tenor.com/images/d632412aaffe388de314b7abff9c408e/tenor.gif?itemid=17781004");
         }
+        /*[Command("appealurl")]
+        private async Task appealurl([Remainder]string args)
+        {
+            //label the config as a string.
+            string text = File.ReadAllText("config.json");
+
+            //Prepare the config.disabledpenis
+            config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
+            string disabledpenisstringg = config.appealurl;
+
+            //Checks to see if your userid is either Mango's or River's
+            if (Context.User.Id == DiscordBotOwner)
+            {
+                //If it's currently disabled
+                if (config.disabledpenis == "1")
+                {
+                    //replace the found text with the other text
+                    text = text.Replace("\"disabledpenis\": \"1\"", "\"disabledpenis\": \"2\"");
+                    //write it
+                    File.WriteAllText("config.json", text);
+                    //reply with a basic response
+                    await ReplyAsync("Penis commands are now *enabled*");
+                }
+                //if it's not currently disabled
+                else
+                {
+                    //replace the found text with the other text
+                    text = text.Replace("\"disabledpenis\": \"2\"", "\"disabledpenis\": \"1\"");
+                    //write it
+                    File.WriteAllText("config.json", text);
+                    //reply with a basic response
+                    await ReplyAsync("Penis commands are now *disabled*");
+                }
+            }
+            //If you aren't Mango or River
+            else
+            {
+                await ReplyAsync("You have to be either River or Mango to execute this command!");
+            }
+        }*/
     }
 }

@@ -47,7 +47,8 @@ namespace MangoBotStartup
                     token = "",
                     game = "",
                     botowner = "",
-                    disabledpenis = "1"
+                    disabledpenis = "1",
+                    appealurl = ""
                 };
                 File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
             }
@@ -65,6 +66,8 @@ namespace MangoBotStartup
             string prefix = config.prefix;
 
             string disabledpenis = config.disabledpenis;
+
+            string appealurl = config.appealurl;
 
             //ulong botowner = config.botowner;
 
@@ -130,6 +133,7 @@ namespace MangoBotStartup
         public string game { get; set; }
         public string botowner { get; set; }
         public string disabledpenis { get; set; }
+        public string appealurl { get; set; }
     }
 
 }
