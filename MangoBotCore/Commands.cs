@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using unirest_net.http;
 
@@ -20,8 +21,6 @@ namespace MangoBotCommandsNamespace
     public class Commands : ModuleBase<SocketCommandContext>
     {
         private BotConfig config;
-        private ulong DiscordBotOwner = 287778194977980416; // REPLACE WITH CURRENT BOT OWNER USERID
-        //private int disablepenisbool;
 
         [Command("ping")]
         private async Task Ping(params string[] args)
@@ -29,24 +28,20 @@ namespace MangoBotCommandsNamespace
             await ReplyAsync("Pong! 🏓 **" + Program._client.Latency + "ms**");
         }
         [Command("status")]
+        [RequireOwner]
         private async Task status([Remainder] string args)
         {
-            if (Context.User.Id == DiscordBotOwner)
-            {
-                await Program._client.SetGameAsync($"{args}");
-            }
-            else
-            {
-                //await ReplyAsync("You aren't the owner silly!");
-            }
+             await Program._client.SetGameAsync($"{args}");
         }
         [Command("help")]
         private async Task help()
         {
+            ulong authorid = Context.Message.Author.Id;
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             string prefix = config.prefix;
             string CommandsList = $"**Commands:**\n" +
     $"***Current Prefix is {prefix}***\n" +
+    $"----------------------------\n" +
     $"**help:** *Displays this command.*\n" +
     $"**about:** *Displays some information about the bot!*\n" +
     $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
@@ -57,15 +52,21 @@ namespace MangoBotCommandsNamespace
     $"**joke:** *Tells a dad joke!*\n" +
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n";
-            if (Context.Channel.Name != Context.User.Username && Context.Guild.Id == 687875961995132973)
+            if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
-                await ReplyAsync(CommandsList + "**minecraft:** *Sends the current IP of the minecraft server*\n" +
+                CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
+                    $"----------------------------\n" +
+                    $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
+                    $"**ban:** *Bans mentioned user with reason specified. Ex. `^ban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)*\n");
+            }
+            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
+            {
+                CommandsList = (CommandsList + "**\nUnlimited SCP Commands**:\n" +
+                    "----------------------------\n" +
+                    "**minecraft:** *Sends the current IP of the minecraft server*\n" +
                     "**appeal:** *Sends a invite link to the appeal discord*");
             }
-            else
-            {
-                await ReplyAsync(CommandsList);
-            }
+            await ReplyAsync(CommandsList);
         }
         [Command("penis")]
         private async Task penis(params string[] args)
@@ -218,7 +219,10 @@ namespace MangoBotCommandsNamespace
         [Command("todo")]
         private async Task todo(params string[] args)
         {
-            await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**");
+            await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**\n" +
+                "**2.** Add ban command. *Work in progress.*\n" +
+                "**3.** Add ^modhelp or the sort for listing staff commands\n" +
+                "**4.** Rework penis command code.");
         }
         [Command("avatar")]
         [Alias("pfp")]
@@ -295,20 +299,14 @@ namespace MangoBotCommandsNamespace
             }
         }
         [Command("say")]
+        [RequireOwner]
         private async Task say([Remainder] string args)
         {
-            if(!Context.IsPrivate)
+            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
             {
                 await Context.Message.DeleteAsync();
             }
-            if (Context.User.Id == DiscordBotOwner)
-            {
-                await ReplyAsync(args);
-            }
-            else
-            {
-                await ReplyAsync("You must be the bot owner to execute the command!");
-            }
+            await ReplyAsync(args);
         }
 
         [Command("about")]
@@ -326,23 +324,15 @@ namespace MangoBotCommandsNamespace
             {
                 await ReplyAsync("The server IP is `mc.unlimitedscp.com`");
             }
-            else
-            {
-                await ReplyAsync("That's a Unlimited SCP only command!");
-            }
         }
         [Command("appeal")]
         [Alias("appeals")]
         private async Task appeal()
         {
-            //If you're in Unlimited, send the invite, if you aren't, spit out a generic error message.
+            //If you're in Unlimited, send the invite.
             if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
             {
-                await ReplyAsync($"The appeal URL is https://discord.gg/gfCvJ3d");
-            }
-            else
-            {
-                await ReplyAsync("That's a Unlimited SCP only command!");
+                await ReplyAsync($"The appeal URL is http://appeal.unlimitedscp.com");
             }
         }
         [Command("disablepenis")]
@@ -391,45 +381,78 @@ namespace MangoBotCommandsNamespace
         {
             await ReplyAsync("https://media1.tenor.com/images/d632412aaffe388de314b7abff9c408e/tenor.gif?itemid=17781004");
         }
-        /*[Command("appealurl")]
-        private async Task appealurl([Remainder]string args)
+        [Command("purge")]
+        [Summary("purges X messages")]
+        [RequireUserPermission(GuildPermission.ManageMessages, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        private async Task purge(int args)
         {
-            //label the config as a string.
-            string text = File.ReadAllText("config.json");
-
-            //Prepare the config.disabledpenis
-            config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-            string disabledpenisstringg = config.appealurl;
-
-            //Checks to see if your userid is either Mango's or River's
-            if (Context.User.Id == DiscordBotOwner)
+            if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
             {
-                //If it's currently disabled
-                if (config.disabledpenis == "1")
-                {
-                    //replace the found text with the other text
-                    text = text.Replace("\"disabledpenis\": \"1\"", "\"disabledpenis\": \"2\"");
-                    //write it
-                    File.WriteAllText("config.json", text);
-                    //reply with a basic response
-                    await ReplyAsync("Penis commands are now *enabled*");
-                }
-                //if it's not currently disabled
-                else
-                {
-                    //replace the found text with the other text
-                    text = text.Replace("\"disabledpenis\": \"2\"", "\"disabledpenis\": \"1\"");
-                    //write it
-                    File.WriteAllText("config.json", text);
-                    //reply with a basic response
-                    await ReplyAsync("Penis commands are now *disabled*");
-                }
+                IEnumerable<IMessage> messages = await Context.Channel.GetMessagesAsync(args + 1).FlattenAsync();
+                await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
+                const int delay = 3000;
+                IUserMessage m = await ReplyAsync($"I have deleted {args} messages for ya. :)");
+                await Task.Delay(delay);
+                await m.DeleteAsync();
             }
-            //If you aren't Mango or River
             else
             {
-                await ReplyAsync("You have to be either River or Mango to execute this command!");
+                await ReplyAsync("You either, need to give me Manage Messages in this server before I can run this command, or you are in a DM!");
             }
-        }*/
+        }
+        [Command("ban")]
+        [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
+        [RequireOwner(Group = "Permissions")]
+        private async Task ban(SocketGuildUser usertobehammered, [Remainder]string banre)
+        {
+            if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
+            {
+                var serverid = Context.Guild.Id;
+                string servername = Context.Guild.Name;
+                var bannedfool = usertobehammered;
+
+                if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
+                {
+                    var rUser = Context.User as SocketGuildUser;
+
+                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
+                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}. Please visit http://appeal.unlimitedscp.com to appeal your ban.");
+                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
+                }
+                else
+                {
+                    var rUser = Context.User as SocketGuildUser;
+
+                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
+                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}.");
+                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
+                }
+            }
+            else
+            {
+                if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
+                {
+                    await Context.Message.DeleteAsync();
+                }
+                await ReplyAsync("You need to give me Ban Members in this server before I can run this command!");
+            }
+        }
+        [Command("bann")]
+        private async Task bann(SocketGuildUser usertobehammered, [Remainder] string banre)
+        {
+            var serverid = Context.Guild.Id;
+            string servername = Context.Guild.Name;
+            var bannedfool = usertobehammered;
+
+            if(String.IsNullOrEmpty(banre))
+            {
+                await ReplyAsync($"Banned {bannedfool.Nickname}!");
+            }
+            else
+            {
+                await ReplyAsync($"Banned {bannedfool.Nickname} for {banre}!");
+            }
+        }
     }
 }
