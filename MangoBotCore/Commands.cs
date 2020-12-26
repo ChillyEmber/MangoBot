@@ -71,48 +71,30 @@ namespace MangoBotCommandsNamespace
         [Command("penis")]
         private async Task penis(params string[] args)
         {
-            //State config.disabledpenis
-            bool runpeniscommand;
+            //Defining config
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-            //string disabledpenis = config.disabledpenis;
 
             //Checks to see if penis command is disabled
-            if (config.disabledpenis == "1")
+            switch(config.disabledpenis)
             {
-                //Checks if it's Unlimited
-                if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-                {
-                    await ReplyAsync("Penis commands have been disabled, sorry!");
-                    runpeniscommand = false;
-                }
-                //If it isn't unlimited, it'll let you through
-                else
-                {
-                    runpeniscommand = true;
-                }
+                case "1": //If it's one, consider it disabled.
+                    //Checks if it's Unlimited, if it is, don't allow the penis command to run.
+                    if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
+                    {
+                        return;
+                    }
+                    break;
             }
-            else //If off in configs, send it through.
+            var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
+
+            //just generate random number and set that num to ppnum
+            string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" }; //All the different penises that it can send.
+            Random rand = new Random(); //Creates a random veriable
+            int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
+            int ppnum = RandomID; //Saves the RandomID to ppnum.
+            switch (args.Length)
             {
-                runpeniscommand = true;
-            }
-
-            //If the checks went through, and 
-            if (runpeniscommand == true)
-            {
-                /*string[] penisquotes = { "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D"};
-                Random rand = new Random();
-                int index = rand.Next(penisquotes.Length);
-                await ReplyAsync($"{args}'s penis length is {penisquotes[index]}");*/
-
-                var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
-
-                //just generate random number and set that num to ppnum
-                string[] penisquotes = { "8D", "8=D", "8==D", "8===D", "8====D", "8=====D", "8======D", "8=======D", "8========D", "8=========D", "8=========D", "8==========D" }; //All the different penises that it can send.
-                Random rand = new Random(); //Creates a random veriable
-                int RandomID = rand.Next(1, 11); //Select one of the two options that it can pick from
-                int ppnum = RandomID; //Saves the RandomID to ppnum.
-                if (args.Length == 0) // If there isn't any mentioned users.
-                {
+                case 0:
                     ulong authorid = Context.User.Id;
                     if (pp.ppsize.ContainsKey(authorid))
                     {
@@ -124,9 +106,8 @@ namespace MangoBotCommandsNamespace
                         File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
                     }
                     await ReplyAsync($"<@{authorid}>'s penis size is {penisquotes[ppnum]}");
-                }
-                if (args.Length == 1) //If theres one mentioned user.
-                {
+                    break;
+                case 1:
                     if (args[0].Contains("@everyone") | args[0].Contains("@here")) //Checking for any everyone or here pings.
                     {
                         await ReplyAsync("Tsk Tsk");
@@ -145,11 +126,10 @@ namespace MangoBotCommandsNamespace
                         }
                         await ReplyAsync($"{Program._client.GetUser(UserID).Username}'s penis size is {penisquotes[ppnum]}");
                     }
-                }
-                if (args.Length > 2 | args.Length == 2) //If theres more than one argument
-                {
+                    break;
+                default:
                     await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
-                }
+                    break;
             }
         }
 
