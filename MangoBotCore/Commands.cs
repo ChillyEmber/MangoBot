@@ -190,6 +190,7 @@ namespace MangoBotCommandsNamespace
         [Summary("Tells a dad joke!")]
         private async Task joke(params string[] args)
         {
+            //Contacts an API to recieve a random dad joke
             HttpResponse<string> response = Unirest.get("https://icanhazdadjoke.com/")
             .header("User-Agent", "MangoBot https://github.com/lXxMangoxXl/MangoBot")
             .header("Accept", "text/plain")
@@ -200,9 +201,9 @@ namespace MangoBotCommandsNamespace
         private async Task todo(params string[] args)
         {
             await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**\n" +
-                "**2.** Add ban command. *Work in progress.*\n" +
-                "**3.** Add ^modhelp or the sort for listing staff commands\n" +
-                "**4.** Rework penis command code.");
+                "**2.** Add ban command. **DONE**\n" +
+                "**3.** Add ^modhelp or the sort for listing staff commands **DONE**\n" +
+                "**4.** Rework penis command code. **DONE**");
         }
         [Command("avatar")]
         [Alias("pfp")]
@@ -215,26 +216,26 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
+                if (args[0].Contains("@everyone") | args[0].Contains("@here")) //Makes sure that there isn't an @everyone or a @here to prevent a mass-ping through the bot.
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
                 else
                 {
-                    if (args[0].Contains("@"))
+                    if (args[0].Contains("@")) //Checks to see if there was any ping by looking to see if there was an @
                     {
-                        ulong userid = MentionUtils.ParseUser(args[0]);
-                        SocketUser user = Program._client.GetUser(userid);
-                        if (user.GetAvatarUrl() == null)
+                        ulong userid = MentionUtils.ParseUser(args[0]); //Parses the mention to get a userid
+                        SocketUser user = Program._client.GetUser(userid); //Defines a SocketUser based on that userid
+                        if (user.GetAvatarUrl() == null) //If the user doesn't have an avatar
                         {
                             await ReplyAsync($"{Program._client.GetUser(userid).Username}'s avatar is {user.GetDefaultAvatarUrl()}");
                         }
-                        else
+                        else //If the user *does* have an avatar
                         {
                             await ReplyAsync($"{Program._client.GetUser(userid).Username}'s avatar is {user.GetAvatarUrl()}");
                         }
                     }
-                    else
+                    else //If there was *not* an @
                     {
                         await ReplyAsync("You have to mention someone to get their avatar!");
                     }
@@ -253,7 +254,7 @@ namespace MangoBotCommandsNamespace
             {
                 await ReplyAsync($"Heres your default avatar! {Context.User.GetDefaultAvatarUrl()}");
             }
-            if (args.Length == 1)
+            if (args.Length == 1) //Makes sure that there isn't an @everyone or a @here to prevent a mass-ping through the bot.
             {
                 if (args[0].Contains("@everyone") | args[0].Contains("@here"))
                 {
@@ -261,7 +262,7 @@ namespace MangoBotCommandsNamespace
                 }
                 else
                 {
-                    if (args[0].Contains("@"))
+                    if (args[0].Contains("@")) //Checks to see if there was any ping by looking to see if there was an @
                     {
                         ulong userid = MentionUtils.ParseUser(args[0]);
                         SocketUser user = Program._client.GetUser(userid);
@@ -357,7 +358,7 @@ namespace MangoBotCommandsNamespace
         }
         [Command("brazil")]
         [Summary("Send someone to brazil.")]
-        private async Task brazil()
+        private async Task brazil([Remainder] string SolutionQuoteOnQuote = "")
         {
             await ReplyAsync("https://media1.tenor.com/images/d632412aaffe388de314b7abff9c408e/tenor.gif?itemid=17781004");
         }
@@ -384,7 +385,7 @@ namespace MangoBotCommandsNamespace
         [Command("ban")]
         [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
         [RequireOwner(Group = "Permissions")]
-        private async Task ban(SocketGuildUser usertobehammered, [Remainder]string banre)
+        private async Task ban(SocketGuildUser usertobehammered, [Remainder]string banre = "reason not specified")
         {
             if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
             {
@@ -397,7 +398,7 @@ namespace MangoBotCommandsNamespace
                     var rUser = Context.User as SocketGuildUser;
 
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
-                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}. Please visit http://appeal.unlimitedscp.com to appeal your ban.");
+                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}, for {banre}. Please visit http://appeal.unlimitedscp.com to appeal your ban.");
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
                 }
                 else
@@ -405,7 +406,7 @@ namespace MangoBotCommandsNamespace
                     var rUser = Context.User as SocketGuildUser;
 
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
-                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}.");
+                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}, for {banre}.");
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
                 }
             }
@@ -419,7 +420,7 @@ namespace MangoBotCommandsNamespace
             }
         }
         [Command("bann")]
-        private async Task bann(SocketGuildUser usertobehammered, [Remainder] string banre)
+        private async Task bann(SocketGuildUser usertobehammered, [Remainder] string banre = "")
         {
             var serverid = Context.Guild.Id;
             string servername = Context.Guild.Name;
