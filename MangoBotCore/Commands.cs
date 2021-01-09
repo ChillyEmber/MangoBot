@@ -422,8 +422,6 @@ namespace MangoBotCommandsNamespace
         [Command("bann")]
         private async Task bann(SocketGuildUser usertobehammered, [Remainder] string banre = "")
         {
-            var serverid = Context.Guild.Id;
-            string servername = Context.Guild.Name;
             var bannedfool = usertobehammered;
 
             if(String.IsNullOrEmpty(banre))
