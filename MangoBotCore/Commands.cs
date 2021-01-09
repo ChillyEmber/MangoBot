@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using unirest_net.http;
 
@@ -51,7 +52,8 @@ namespace MangoBotCommandsNamespace
     $"**slap @user:** *Slaps specified user.*\n" +
     $"**joke:** *Tells a dad joke!*\n" +
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-    $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n";
+    $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
+    $"**bann:** \"bann\" someone!";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
@@ -385,29 +387,24 @@ namespace MangoBotCommandsNamespace
         [Command("ban")]
         [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
         [RequireOwner(Group = "Permissions")]
-        private async Task ban(SocketGuildUser usertobehammered, [Remainder]string banre = "reason not specified")
+        private async Task ban(string findUser, [Remainder]string banre = "reason not specified")
         {
             if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
             {
-                var serverid = Context.Guild.Id;
-                string servername = Context.Guild.Name;
-                var bannedfool = usertobehammered;
 
-                if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-                {
-                    var rUser = Context.User as SocketGuildUser;
+                if(ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted)) { //Removes any extra stuff to just get userid
+                    var usertobehammered = Context.Client.GetUser(converted) as SocketGuildUser; //Saves tobebanned user as SocketGuildUser
 
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
-                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}, for {banre}. Please visit http://appeal.unlimitedscp.com to appeal your ban.");
-                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
-                }
-                else
-                {
-                    var rUser = Context.User as SocketGuildUser;
 
-                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
-                    await bannedfool.SendMessageAsync($"You've been banned from {Context.Guild.Name}, for {banre}.");
-                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre);
+                    string banDM = ($"You've been banned from {Context.Guild.Name}, for {banre}."); //Base ban message
+                    if(!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
+                    {
+                           banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
+                    }
+                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
+                } else {
+                    await ReplyAsync("Couldn't parse findUser string."); //If findUser couldn't be parsed for whatever reason
                 }
             }
             else
