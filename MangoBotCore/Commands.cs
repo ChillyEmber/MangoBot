@@ -428,11 +428,11 @@ namespace MangoBotCommandsNamespace
 
             if(String.IsNullOrEmpty(banre))
             {
-                await ReplyAsync($"Banned {bannedfool.Nickname}!");
+                await ReplyAsync($"Banned {bannedfool.Nickname ?? bannedfool.Username}!");
             }
             else
             {
-                await ReplyAsync($"Banned {bannedfool.Nickname} for {banre}!");
+                await ReplyAsync($"Banned {bannedfool.Nickname ?? bannedfool.Username} for {banre}!");
             }
         }
     }
