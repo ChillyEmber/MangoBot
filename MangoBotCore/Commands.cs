@@ -393,9 +393,11 @@ namespace MangoBotCommandsNamespace
             {
 
                 if(ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted)) { //Removes any extra stuff to just get userid
-                    var usertobehammered = Context.Client.GetUser(converted) as SocketGuildUser; //Saves tobebanned user as SocketGuildUser
+                    var usertobehammered = Context.Client.GetUser(converted) ?? Context.Guild.GetUser(converted); //Saves tobebanned user as SocketGuildUser
 
-                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
+                    if(usertobehammered == null) {
+                        await ReplyAsync("The user came out to be null, please screenshot this and send this to lXxMangoxXl#8878 (The ban, WILL NOT go through if this message appears)");
+                    }
 
                     string banDM = ($"You've been banned from {Context.Guild.Name}, for {banre}."); //Base ban message
                     if(!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
@@ -403,6 +405,7 @@ namespace MangoBotCommandsNamespace
                            banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
                     }
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
+                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
                 } else {
                     await ReplyAsync("Couldn't parse findUser string."); //If findUser couldn't be parsed for whatever reason
                 }
