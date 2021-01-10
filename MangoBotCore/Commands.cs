@@ -53,7 +53,7 @@ namespace MangoBotCommandsNamespace
     $"**joke:** *Tells a dad joke!*\n" +
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-    $"**bann:** *\"bann\" someone!\n*" +
+    $"**bann:** *\"bann\" someone!*\n" +
     $"**invite:** *Get the bot's invite!*\n";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
