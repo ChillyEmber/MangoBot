@@ -53,7 +53,8 @@ namespace MangoBotCommandsNamespace
     $"**joke:** *Tells a dad joke!*\n" +
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-    $"**bann:** \"bann\" someone!";
+    $"**bann:** *\"bann\" someone!\n*" +
+    $"**invite:** *Get the bot's invite!*\n";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
@@ -389,30 +390,35 @@ namespace MangoBotCommandsNamespace
         [RequireOwner(Group = "Permissions")]
         private async Task ban(string findUser, [Remainder]string banre = "reason not specified")
         {
-            if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
+            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
             {
 
-                if(ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted)) { //Removes any extra stuff to just get userid
+                if (ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted))
+                { //Removes any extra stuff to just get userid
                     var usertobehammered = Context.Client.GetUser(converted) ?? Context.Guild.GetUser(converted); //Saves tobebanned user as SocketGuildUser
 
-                    if(usertobehammered == null) {
+                    if (usertobehammered == null)
+                    {
                         await ReplyAsync("The user came out to be null, please screenshot this and send this to lXxMangoxXl#8878 (The ban, WILL NOT go through if this message appears)");
                     }
 
                     string banDM = ($"You've been banned from {Context.Guild.Name}, for {banre}."); //Base ban message
-                    if(!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
+                    if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
                     {
-                           banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
+                        banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
                     }
+                    await usertobehammered.SendMessageAsync(banDM);
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
-                } else {
+                }
+                else
+                {
                     await ReplyAsync("Couldn't parse findUser string."); //If findUser couldn't be parsed for whatever reason
                 }
             }
             else
             {
-                if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
+                if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
                 {
                     await Context.Message.DeleteAsync();
                 }
@@ -432,6 +438,11 @@ namespace MangoBotCommandsNamespace
             {
                 await ReplyAsync($"Banned {bannedfool.Nickname ?? bannedfool.Username} for {banre}!");
             }
+        }
+        [Command("invite")]
+        private async Task invite()
+        {
+            await Context.Message.Author.SendMessageAsync("https://discord.com/api/oauth2/authorize?client_id=762736334606696509&permissions=59396&scope=bot");
         }
     }
 }
