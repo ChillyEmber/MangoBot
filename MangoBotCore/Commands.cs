@@ -409,22 +409,14 @@ namespace MangoBotCommandsNamespace
                         banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
                     }
 
-                    try
+                    try //Try and send the DM message
                     {
                         await usertobehammered.SendMessageAsync(banDM);
                     }
-                    catch (Discord.Net.HttpException)
+                    catch (Discord.Net.HttpException) //Catch an HttpException error if it can't.
                     {
                         await ReplyAsync($"There was a http exception when trying to send the DM, probably because the user has blocked DMs from me.");
                     }
-
-                    /*if (usertobehammered.MutualGuilds.Contains<> = Context.Guild) //Checks to see if the user is in the guild
-                    {
-                    }
-                    else //If they aren't spit out an error message.
-                    {
-                        await ReplyAsync("Unfortunately, the member isn't in this server, so I couldn't send a ban message.");
-                    }*/
 
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
