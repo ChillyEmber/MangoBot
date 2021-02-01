@@ -387,6 +387,7 @@ namespace MangoBotCommandsNamespace
         }
         [Command("ban")]
         [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
+        [RequireUserPermission(GuildPermission.Administrator, Group = "Permissions")]
         [RequireOwner(Group = "Permissions")]
         private async Task ban(string findUser, [Remainder]string banre = "reason not specified")
         {
@@ -395,7 +396,7 @@ namespace MangoBotCommandsNamespace
 
                 if (ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted))
                 { //Removes any extra stuff to just get userid
-                    var usertobehammered = Context.Client.GetUser(converted) ?? Context.Guild.GetUser(converted); //Saves tobebanned user as SocketGuildUser
+                    var usertobehammered = Context.Client.GetUser(converted) ?? Context.Guild.GetUser(converted); //Saves tobebanned user as SocketGuildUser //THROWS ERROR HERE WHEN NOT IN MUTUAL GUILDS
 
                     if (usertobehammered == null)
                     {
@@ -407,7 +408,16 @@ namespace MangoBotCommandsNamespace
                     {
                         banDM += (" Please visit http://appeal.unlimitedscp.com to appeal your ban."); //If server is Unlimited, affix appeal URL to base ban message
                     }
-                    await usertobehammered.SendMessageAsync(banDM);
+
+                    if(usertobehammered.MutualGuilds == Context.Guild) //Checks to see if the user is in the guild
+                    {
+                        await usertobehammered.SendMessageAsync(banDM);
+                    }
+                    else //If they aren't spit out an error message.
+                    {
+                        await ReplyAsync("Unfortunately, the member isn't in this server, so I couldn't send a ban message.");
+                    }
+
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
                 }
