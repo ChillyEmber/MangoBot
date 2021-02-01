@@ -411,7 +411,14 @@ namespace MangoBotCommandsNamespace
 
                     if(usertobehammered.MutualGuilds == Context.Guild) //Checks to see if the user is in the guild
                     {
-                        await usertobehammered.SendMessageAsync(banDM);
+                        try
+                        {
+                            await usertobehammered.SendMessageAsync(banDM);
+                        }
+                        catch(Discord.Net.HttpException)
+                        {
+                            await ReplyAsync($"There was a http exception when trying to send the DM, probably because the user has blocked DMs from me.");
+                        }
                     }
                     else //If they aren't spit out an error message.
                     {
