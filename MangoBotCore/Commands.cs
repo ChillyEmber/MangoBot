@@ -54,7 +54,8 @@ namespace MangoBotCommandsNamespace
     $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**bann:** *\"bann\" someone!*\n" +
-    $"**invite:** *Get the bot's invite!*\n";
+    $"**invite:** *Get the bot's invite!*\n" +
+    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot*\n";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
@@ -453,6 +454,29 @@ namespace MangoBotCommandsNamespace
         private async Task invite()
         {
             await Context.Message.Author.SendMessageAsync("https://discord.com/api/oauth2/authorize?client_id=762736334606696509&permissions=59396&scope=bot");
+        }
+        [Command("inspire")]
+        [Alias("inspiro", "inspirobot")]
+        [Summary("Tells a dad joke!")]
+        private async Task inspire(string input = "")
+        {
+            //Contacts an API to recieve a random dad joke
+            switch(input)
+            {
+                case "":
+                    HttpResponse<string> response = Unirest.get("https://inspirobot.me/api?generate=true")
+                    .asString();
+                    await ReplyAsync(response.Body.ToString());
+                    break;
+                case "xmas":
+                    HttpResponse<string> responsexmas = Unirest.get("https://inspirobot.me/api?generate=true&season=xmas")
+                    .asString();
+                    await ReplyAsync(responsexmas.Body.ToString());
+                    break;
+                default:
+                    await ReplyAsync("Your valid options are \"xmas\", or, you can leave it with no arguments to get regular inspirational quotes.");
+                    break;
+            }
         }
     }
 }
