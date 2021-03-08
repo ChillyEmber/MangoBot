@@ -63,13 +63,6 @@ namespace MangoBotCommandsNamespace
                     $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
                     $"**ban:** *Bans mentioned user with reason specified. Ex. `^ban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)*\n");
             }
-            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-            {
-                CommandsList = (CommandsList + "**\nUnlimited SCP Commands**:\n" +
-                    "----------------------------\n" +
-                    "**minecraft:** *Sends the current IP of the minecraft server*\n" +
-                    "**appeal:** *Sends a invite link to the appeal discord*");
-            }
             await ReplyAsync(CommandsList);
         }
         [Command("penis")]
@@ -301,25 +294,6 @@ namespace MangoBotCommandsNamespace
                 "https://github.com/lXxMangoxXl/MangoBot/ \n" +
                 "Made with Discord.Net, C#, and lots of love!");
         }
-        [Command("minecraft")]
-        private async Task minecraft()
-        {
-            //If you're in Unlimited, send the game address, if you aren't, spit out a generic error message.
-            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-            {
-                await ReplyAsync("The server IP is `mc.unlimitedscp.com`");
-            }
-        }
-        [Command("appeal")]
-        [Alias("appeals")]
-        private async Task appeal()
-        {
-            //If you're in Unlimited, send the invite.
-            if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-            {
-                await ReplyAsync($"The appeal URL is http://appeal.unlimitedscp.com");
-            }
-        }
         [Command("disablepenis")]
         private async Task disablepenis()
         {
@@ -416,7 +390,7 @@ namespace MangoBotCommandsNamespace
                     }
                     catch (Discord.Net.HttpException) //Catch an HttpException error if it can't.
                     {
-                        await ReplyAsync($"There was a http exception when trying to send the DM, probably because the user has blocked DMs from me.");
+                        await ReplyAsync($"There was an http exception when trying to send the DM, probably because the user has blocked DMs from me.");
                     }
 
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
