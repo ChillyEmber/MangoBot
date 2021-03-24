@@ -32,7 +32,7 @@ namespace MangoBotCommandsNamespace
         [RequireOwner]
         private async Task status([Remainder] string args)
         {
-             await Program._client.SetGameAsync($"{args}");
+            await Program._client.SetGameAsync($"{args}");
         }
         [Command("help")]
         private async Task help()
@@ -72,7 +72,7 @@ namespace MangoBotCommandsNamespace
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
 
             //Checks to see if penis command is disabled
-            switch(config.disabledpenis)
+            switch (config.disabledpenis)
             {
                 case "1": //If it's one, consider it disabled.
                     //Checks if it's Unlimited, if it is, don't allow the penis command to run.
@@ -346,7 +346,7 @@ namespace MangoBotCommandsNamespace
         [RequireOwner(Group = "Permission")]
         private async Task purge(int args)
         {
-            if(!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
+            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
             {
                 IEnumerable<IMessage> messages = await Context.Channel.GetMessagesAsync(args + 1).FlattenAsync();
                 await ((ITextChannel)Context.Channel).DeleteMessagesAsync(messages);
@@ -364,7 +364,7 @@ namespace MangoBotCommandsNamespace
         [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
         [RequireUserPermission(GuildPermission.Administrator, Group = "Permissions")]
         [RequireOwner(Group = "Permissions")]
-        private async Task ban(string findUser, [Remainder]string banre = "reason not specified")
+        private async Task ban(string findUser, [Remainder] string banre = "reason not specified")
         {
             if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
             {
@@ -415,7 +415,7 @@ namespace MangoBotCommandsNamespace
         {
             var bannedfool = usertobehammered;
 
-            if(String.IsNullOrEmpty(banre))
+            if (String.IsNullOrEmpty(banre))
             {
                 await ReplyAsync($"Banned {bannedfool.Nickname ?? bannedfool.Username}!");
             }
@@ -435,7 +435,7 @@ namespace MangoBotCommandsNamespace
         private async Task inspire(string input = "")
         {
             //Contacts an API to recieve a random dad joke
-            switch(input)
+            switch (input)
             {
                 case "":
                     HttpResponse<string> response = Unirest.get("https://inspirobot.me/api?generate=true")
@@ -452,5 +452,11 @@ namespace MangoBotCommandsNamespace
                     break;
             }
         }
+        [Command("kiss")]
+        private async Task kiss(string placeholder = "")
+        {
+            await ReplyAsync("https://cdn.discordapp.com/attachments/727473570619588650/824378462406967306/funnycatkiss.mp4");
+        }
+
     }
 }
