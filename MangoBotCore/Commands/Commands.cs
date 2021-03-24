@@ -45,7 +45,6 @@ namespace MangoBotCommandsNamespace
     $"----------------------------\n" +
     $"**help:** *Displays this command.*\n" +
     $"**about:** *Displays some information about the bot!*\n" +
-    $"**todo:** *Lists any upcoming commands and/or things that need to be fixed/changed.*\n" +
     $"**penis:** *Generates a penis size for the mentioned user.*\n" +
     $"**8ball:** *Read the future with this 8ball command!*\n" +
     $"**ping:** *Sends the ping of the discord bot.*\n" +
@@ -55,7 +54,9 @@ namespace MangoBotCommandsNamespace
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**bann:** *\"bann\" someone!*\n" +
     $"**invite:** *Get the bot's invite!*\n" +
-    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot*\n";
+    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot*\n" +
+    $"**kiss:** *Kiss the bride/groom/yes*\n" +
+    $"**unfunny:** *Use when someone says something unhumorous*\n";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
@@ -193,14 +194,6 @@ namespace MangoBotCommandsNamespace
             .header("Accept", "text/plain")
             .asString();
             await ReplyAsync(response.Body.ToString());
-        }
-        [Command("todo")]
-        private async Task todo(params string[] args)
-        {
-            await ReplyAsync("**1.** Edit command handler for better error messages. **FIXED**\n" +
-                "**2.** Add ban command. **DONE**\n" +
-                "**3.** Add ^modhelp or the sort for listing staff commands **DONE**\n" +
-                "**4.** Rework penis command code. **DONE**");
         }
         [Command("avatar")]
         [Alias("pfp")]
@@ -457,6 +450,15 @@ namespace MangoBotCommandsNamespace
         {
             await ReplyAsync("https://cdn.discordapp.com/attachments/727473570619588650/824378462406967306/funnycatkiss.mp4");
         }
-
+        [Command("unfunny")]
+        private async Task unfunny()
+        {
+            await ReplyAsync("https://media.discordapp.net/attachments/781578575056732191/790721134135869460/Unfunny_Meme.gif");
+        }
+        [Command("fate")]
+        private async Task fate()
+        {
+            await ReplyAsync("You will now become amogus.");
+        }
     }
 }
