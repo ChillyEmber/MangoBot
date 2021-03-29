@@ -460,5 +460,10 @@ namespace MangoBotCommandsNamespace
         {
             await ReplyAsync("You will now become amogus.");
         }
+        [Command("totalservers")]
+        private async Task totalservers()
+        {
+            await ReplyAsync(Program._client.Guilds.Count.ToString());
+        }
     }
 }
