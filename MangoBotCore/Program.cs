@@ -8,6 +8,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Lavalink4NET;
+using Lavalink4NET.DiscordNet;
+using Lavalink4NET.Tracking;
 
 namespace MangoBotStartup
 {
@@ -21,6 +24,7 @@ namespace MangoBotStartup
 
         // Creating the necessary variables
         public static DiscordSocketClient _client;
+        public static IAudioService AudioService;
         private CommandService _commands;
         private IServiceProvider _services;
         private BotConfig config;
@@ -28,16 +32,6 @@ namespace MangoBotStartup
         // Runbot task
         public async Task RunBot()
         {
-
-            _client = new DiscordSocketClient(); // Define _client
-            _commands = new CommandService(); // Define _commands
-            _services = new ServiceCollection() // Define _services
-                .AddSingleton(_client)
-                .AddSingleton(_commands)
-                .BuildServiceProvider();
-
-
-
             // Config creation/reading.
             if (!File.Exists("config.json"))
             {
@@ -48,7 +42,10 @@ namespace MangoBotStartup
                     game = "",
                     botowner = "",
                     disabledpenis = "1",
-                    appealurl = ""
+                    appealurl = "",
+                    LavalinkPassword = "",
+                    LavalinkRestURL = "",
+                    LavalinkWebsocketURL = ""
                 };
                 File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
             }
@@ -61,6 +58,37 @@ namespace MangoBotStartup
                 File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(new PPSize()));
             }
 
+            _client = new DiscordSocketClient(); // Define _client
+            _commands = new CommandService(); // Define _commands
+            _services = new ServiceCollection() // Define _services
+                .AddSingleton(_client)
+                .AddSingleton(_commands)
+                .AddSingleton<IAudioService, LavalinkNode>()
+                .AddSingleton<IDiscordClientWrapper>(new DiscordClientWrapper(_client))
+                .AddSingleton(new LavalinkNodeOptions {
+                    AllowResuming = true,
+                    BufferSize = 1024 * 1024,
+                    DisconnectOnStop = true,
+                    ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
+                    DebugPayloads = true,
+                    Password = config.LavalinkPassword,
+                    RestUri = config.LavalinkRestURL,
+                    WebSocketUri = config.LavalinkWebsocketURL
+                })
+                .AddSingleton<InactivityTrackingOptions>()
+                .AddSingleton<InactivityTrackingService>()
+                .BuildServiceProvider();
+
+            AudioService = _services.GetRequiredService<IAudioService>();
+
+            _services.GetRequiredService<InactivityTrackingService>()
+            .BeginTracking();
+
+            // Do not forget disposing the service provider!
+
+            // I didn't forget :) (we intentionally forgot)
+            //await serviceProvider.DisposeAsync();
+
             string botToken = config.token; // Make a string for the token
 
             string prefix = config.prefix;
@@ -68,6 +96,12 @@ namespace MangoBotStartup
             string disabledpenis = config.disabledpenis;
 
             string appealurl = config.appealurl;
+
+            string LavalinkPassword = config.LavalinkPassword;
+
+            string LavalinkRestURL = config.LavalinkRestURL;
+
+            string LavalinkWebsocketURL = config.LavalinkWebsocketURL;
 
             //ulong botowner = config.botowner;
 
@@ -81,8 +115,11 @@ namespace MangoBotStartup
 
             await _client.SetGameAsync(config.game); // Set the game the bot is playing
 
+            await AudioService.InitializeAsync();
+
             await Task.Delay(-1); // Delay for -1 to keep the console window open
 
+            AudioService.Dispose();
         }
 
         private async Task RegisterCommandsAsync()
@@ -127,6 +164,9 @@ namespace MangoBotStartup
         public string botowner { get; set; }
         public string disabledpenis { get; set; }
         public string appealurl { get; set; }
+        public string LavalinkPassword { get; set; }
+        public string LavalinkRestURL { get; set; }
+        public string LavalinkWebsocketURL { get; set; }
     }
 
 }

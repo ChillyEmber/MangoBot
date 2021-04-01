@@ -54,17 +54,25 @@ namespace MangoBotCommandsNamespace
     $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
     $"**bann:** *\"bann\" someone!*\n" +
     $"**invite:** *Get the bot's invite!*\n" +
-    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot*\n" +
-    $"**kiss:** *Kiss the bride/groom/yes*\n" +
-    $"**unfunny:** *Use when someone says something unhumorous*\n";
+    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot.*\n" +
+    $"**kiss:** *Kiss the bride/groom/yes.*\n" +
+    $"**unfunny:** *Use when someone says something unhumorous.*" +
+    $"\n\n**Music Commands:**\n" +
+    $"----------------------------\n" +
+    $"**play [Song Name]:** *Searches the song on YouTube, connects to the VC, and plays the song.*\n" +
+    $"**disconnect:** *Disconnects from the voice chat you are currently in.*\n" +
+    $"**volume:** *Adjust the volume of the bot.*\n" +
+    $"**skip:** *Skips the currently playing song.*\n" +
+    $"**position:** *Gets the current songs position.*\n" +
+    $"**stop:** *Stops all playing songs.*";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
-                CommandsList = (CommandsList + $"\n**Moderator Commands:**\n" +
+                CommandsList = (CommandsList + $"\n\n**Moderator Commands:**\n" +
                     $"----------------------------\n" +
                     $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
                     $"**ban:** *Bans mentioned user with reason specified. Ex. `^ban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)*\n");
             }
-            await ReplyAsync(CommandsList);
+            await Context.User.SendMessageAsync(CommandsList);
         }
         [Command("penis")]
         private async Task penis(params string[] args)
