@@ -68,12 +68,27 @@ namespace MangoBotCore.Commands
         [Command("volume")]
         public async Task Volume(int volume = 100)
         {
-            if (volume > 100 || volume < 0 || Context.User.Id != 287778194977980416)
+            if (volume > 100 || volume < 0)
             {
-                await ReplyAsync("Volume out of range: 0% - 100%!");
+                await ReplyAsync("Volume out of range: 0% - 100%! (Make sure that you don't have a % in the parameters.)");
                 return;
             }
 
+            var player = await GetPlayerAsync();
+
+            if (player == null)
+            {
+                return;
+            }
+
+            await player.SetVolumeAsync(volume / 100f);
+            await ReplyAsync($"Volume updated: {volume}%");
+        }
+        
+        [Command("volumeoverride")]
+        [RequireOwner]
+        public async Task volumeoverride(int volume = 100)
+        {
             var player = await GetPlayerAsync();
 
             if (player == null)
@@ -106,6 +121,12 @@ namespace MangoBotCore.Commands
             if (track.Duration.TotalMinutes > 90)
             {
                 await ReplyAsync("That song was too long (>90m)");
+                return;
+            }
+
+            if(track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") || track.Title.Contains("ringing") || track.Title.Contains("18+"))
+            {
+                await ReplyAsync("Audio returned with a blacklisted title!");
                 return;
             }
 
