@@ -68,16 +68,16 @@ namespace MangoBotCore.Commands
         [Command("volume")]
         public async Task Volume(int volume = 100)
         {
-            if (volume > 100 || volume < 0)
-            {
-                await ReplyAsync("Volume out of range: 0% - 100%! (Make sure that you don't have a % in the parameters.)");
-                return;
-            }
-
             var player = await GetPlayerAsync();
 
             if (player == null)
             {
+                return;
+            }
+
+            if (volume > 100 || volume < 0)
+            {
+                await ReplyAsync("Volume out of range: 0% - 100%! (Make sure that you don't have a % in the parameters.)");
                 return;
             }
 
