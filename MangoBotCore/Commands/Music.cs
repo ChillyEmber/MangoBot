@@ -188,5 +188,17 @@ namespace MangoBotCore.Commands
             await player.StopAsync();
             await ReplyAsync("Stopped playing.");
         }
+        [Command("playisbroken")]
+        public async Task playisbroken()
+        {
+            var player = await GetPlayerAsync();
+
+            if (player == null)
+            {
+                return;
+            }
+
+            await player.DestroyAsync();
+        }
     }
 }
