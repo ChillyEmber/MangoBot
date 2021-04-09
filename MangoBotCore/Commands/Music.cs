@@ -143,21 +143,41 @@ namespace MangoBotCore.Commands
         }
 
         [Command("skip")]
-        public async Task skip()
+        public async Task<UserVoteSkipInfo> skip()
         {
             var player = await GetPlayerAsync();
+            var info = await player.GetVoteInfoAsync();
 
             if (player == null)
             {
-                return;
+                return new UserVoteSkipInfo(info, false, false);
             }
 
-            if (player.CurrentTrack != null)
+            if (info.Votes.Contains(Context.User.Id))
+            {
+                return new UserVoteSkipInfo(info, false, false);
+            }
+
+            // add vote and re-get info, because the votes were changed.
+            await player.VoteAsync(Context.User.Id);
+            info = await player.GetVoteInfoAsync();
+
+            if (info.Percentage >= 50)
+            {
+                player.ClearVotes();
+                await player.SkipAsync();
+
+                return new UserVoteSkipInfo(info, true, true);
+            }
+
+            return new UserVoteSkipInfo(info, false, true);
+
+            /*if (player.CurrentTrack != null)
             {
                 await player.SkipAsync();
                 await ReplyAsync("Skipped!");
             }
-            else await ReplyAsync("You need to be playing a song to use this command!");
+            else await ReplyAsync("You need to be playing a song to use this command!");*/
         }
 
         [Command("position")]
