@@ -49,7 +49,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("disconnect")]
-        [Alias("fuckoff")]
+        [Alias("fuckoff", "goaway")]
         public async Task Disconnect()
         {
             var player = await GetPlayerAsync();
@@ -110,6 +110,14 @@ namespace MangoBotCore.Commands
                 return;
             }
 
+            //player.VoiceChannelId
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
+                return;
+            }
+
             var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
 
             if (track == null)
@@ -118,13 +126,13 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            if (track.Duration.TotalMinutes > 90)
+            else if (track.Duration.TotalMinutes > 90)
             {
                 await ReplyAsync("That song was too long (>90m)");
                 return;
             }
 
-            if(track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") || track.Title.Contains("ringing") || track.Title.Contains("18+"))
+            else if(track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") || track.Title.Contains("ringing") || track.Title.Contains("18+"))
             {
                 await ReplyAsync("Audio returned with a blacklisted title!");
                 return;
@@ -143,41 +151,21 @@ namespace MangoBotCore.Commands
         }
 
         [Command("skip")]
-        public async Task<UserVoteSkipInfo> skip()
+        public async Task Skip()
         {
             var player = await GetPlayerAsync();
-            var info = await player.GetVoteInfoAsync();
+            var results = await player.VoteAsync(Context.User.Id);
 
-            if (player == null)
+            if (results.WasSkipped)
             {
-                return new UserVoteSkipInfo(info, false, false);
-            }
-
-            if (info.Votes.Contains(Context.User.Id))
-            {
-                return new UserVoteSkipInfo(info, false, false);
-            }
-
-            // add vote and re-get info, because the votes were changed.
-            await player.VoteAsync(Context.User.Id);
-            info = await player.GetVoteInfoAsync();
-
-            if (info.Percentage >= 50)
-            {
-                player.ClearVotes();
-                await player.SkipAsync();
-
-                return new UserVoteSkipInfo(info, true, true);
-            }
-
-            return new UserVoteSkipInfo(info, false, true);
-
-            /*if (player.CurrentTrack != null)
-            {
-                await player.SkipAsync();
                 await ReplyAsync("Skipped!");
             }
-            else await ReplyAsync("You need to be playing a song to use this command!");*/
+            else if (results.WasAdded)
+            {
+                var info = await player.GetVoteInfoAsync();
+                await ReplyAsync($"Vote was added! There are {info.Votes.Count} votes, and there needs to be {info.TotalUsers / 2} votes total!");
+            }
+            else await ReplyAsync("You already voted!");
         }
 
         [Command("position")]

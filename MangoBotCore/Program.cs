@@ -68,7 +68,7 @@ namespace MangoBotStartup
                 .AddSingleton(new LavalinkNodeOptions {
                     AllowResuming = true,
                     BufferSize = 1024 * 1024,
-                    DisconnectOnStop = true,
+                    DisconnectOnStop = false,
                     ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
                     DebugPayloads = true,
                     Password = config.LavalinkPassword,
@@ -119,7 +119,7 @@ namespace MangoBotStartup
 
             await Task.Delay(-1); // Delay for -1 to keep the console window open
 
-            AudioService.Dispose();
+            //AudioService.Dispose();
         }
 
         private async Task RegisterCommandsAsync()
@@ -141,13 +141,13 @@ namespace MangoBotStartup
             var message = arg as SocketUserMessage; // Create a variable with the message as SocketUserMessage
             if (message is null || message.Author.IsBot || message.Content.Contains($"{config.prefix} ")) return; // Checks if the message is empty or sent by a bot
             int argumentPos = 0; // Sets the argpos to 0 (the start of the message)
-            if (message.HasStringPrefix(config.prefix, ref argumentPos) || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
+            if (message.HasStringPrefix(config.prefix, ref argumentPos) & message.Author.Id != 734471872317751457 & message.Author.Id != 469974878015979520 || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
             {
                 var context = new SocketCommandContext(_client, message); // Create a variable called context
                 var result = await _commands.ExecuteAsync(context, argumentPos, _services); // Create a veriable called result
                 if (!result.IsSuccess) // If the result is unsuccessful
                 {
-                    Console.WriteLine(result.ErrorReason); // Print the error to console
+                    Console.WriteLine($"{message.Author.Username} : {message.Author.Id} : {message.Content} : {result.ErrorReason}"); // Print the error to console
                     //await message.Channel.SendMessageAsync(result.ErrorReason);
                 }
             }
