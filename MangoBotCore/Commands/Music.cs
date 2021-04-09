@@ -146,8 +146,18 @@ namespace MangoBotCore.Commands
         public async Task skip()
         {
             var player = await GetPlayerAsync();
-            await player.SkipAsync();
-            await ReplyAsync("Skipped!");
+
+            if (player == null)
+            {
+                return;
+            }
+
+            if (player.CurrentTrack != null)
+            {
+                await player.SkipAsync();
+                await ReplyAsync("Skipped!");
+            }
+            else await ReplyAsync("You need to be playing a song to use this command!");
         }
 
         [Command("position")]
