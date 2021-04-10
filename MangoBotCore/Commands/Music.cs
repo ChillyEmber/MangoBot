@@ -66,6 +66,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("volume")]
+        [Alias("v")]
         public async Task Volume(int volume = 100)
         {
             var player = await GetPlayerAsync();
@@ -101,6 +102,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("play")]
+        [Alias("p")]
         public async Task Play([Remainder] string query)
         {
             var player = await GetPlayerAsync();
@@ -151,12 +153,26 @@ namespace MangoBotCore.Commands
         }
 
         [Command("skip")]
+        [Alias("s")]
         public async Task Skip()
         {
             var author = Context.Guild.GetUser(Context.User.Id);
             var player = await GetPlayerAsync();
             var results = await player.VoteAsync(Context.User.Id);
-            if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == 287778194977980416)
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            if (player == null)
+            {
+                return;
+            }
+
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
+                return;
+            }
+
+            if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == Program._client.GetApplicationInfoAsync().Result.Owner.Id || Context.Guild.GetUser(Context.User.Id).Roles.Any(r => r.Name == "DJ"))
             {
                 player.ClearVotes();
                 await player.SkipAsync();
@@ -226,5 +242,12 @@ namespace MangoBotCore.Commands
 
             await player.DestroyAsync();
         }
+        [Command("test")]
+        public async Task test()
+        {
+            await ReplyAsync(Program._client.GetApplicationInfoAsync().Result.Owner.Id.ToString());
+            await ReplyAsync(Context.Guild.GetUser(Context.User.Id).Roles.Any(r => r.Name == "DJ").ToString());
+        }
+
     }
 }
