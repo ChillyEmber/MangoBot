@@ -172,7 +172,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == Program._client.GetApplicationInfoAsync().Result.Owner.Id || Context.Guild.GetUser(Context.User.Id).Roles.Any(r => r.Name == "DJ"))
+            if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == Program._client.GetApplicationInfoAsync().Result.Owner.Id || author.Roles.Any(r => r.Name == "DJ"))
             {
                 player.ClearVotes();
                 await player.SkipAsync();
