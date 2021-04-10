@@ -153,8 +153,16 @@ namespace MangoBotCore.Commands
         [Command("skip")]
         public async Task Skip()
         {
+            var author = Context.Guild.GetUser(Context.User.Id);
             var player = await GetPlayerAsync();
             var results = await player.VoteAsync(Context.User.Id);
+            if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == 287778194977980416)
+            {
+                player.ClearVotes();
+                await player.SkipAsync();
+                await ReplyAsync("Force skipped!");
+                return;
+            }
 
             if (results.WasSkipped)
             {
