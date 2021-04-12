@@ -242,12 +242,5 @@ namespace MangoBotCore.Commands
 
             await player.DestroyAsync();
         }
-        [Command("test")]
-        public async Task test()
-        {
-            await ReplyAsync(Program._client.GetApplicationInfoAsync().Result.Owner.Id.ToString());
-            await ReplyAsync(Context.Guild.GetUser(Context.User.Id).Roles.Any(r => r.Name == "DJ").ToString());
-        }
-
     }
 }
