@@ -59,6 +59,14 @@ namespace MangoBotCore.Commands
                 return;
             }
 
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
+                return;
+            }
+
             // when using StopAsync(true) the player also disconnects and clears the track queue.
             // DisconnectAsync only disconnects from the channel.
             await player.StopAsync(true);
@@ -73,6 +81,14 @@ namespace MangoBotCore.Commands
 
             if (player == null)
             {
+                return;
+            }
+
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
 
@@ -114,6 +130,7 @@ namespace MangoBotCore.Commands
 
             //player.VoiceChannelId
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
             if (id == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
@@ -196,9 +213,16 @@ namespace MangoBotCore.Commands
         public async Task Position()
         {
             var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
             if (player == null)
             {
+                return;
+            }
+
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
 
@@ -215,9 +239,16 @@ namespace MangoBotCore.Commands
         public async Task Stop()
         {
             var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
             if (player == null)
             {
+                return;
+            }
+
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
 
@@ -229,18 +260,6 @@ namespace MangoBotCore.Commands
 
             await player.StopAsync();
             await ReplyAsync("Stopped playing.");
-        }
-        [Command("playisbroken")]
-        public async Task playisbroken()
-        {
-            var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
-
-            await player.DestroyAsync();
         }
     }
 }
