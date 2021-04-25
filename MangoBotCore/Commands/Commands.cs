@@ -73,6 +73,9 @@ namespace MangoBotCommandsNamespace
                     $"**ban:** *Bans mentioned user with reason specified. Ex. `^ban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)*\n");
             }
             await Context.User.SendMessageAsync(CommandsList);
+            var check = new Emoji("✅");
+            await Context.Message.AddReactionAsync(check);
+            await ReplyAsync("Sent!");
         }
         [Command("penis")]
         private async Task penis(params string[] args)
