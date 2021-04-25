@@ -64,7 +64,8 @@ namespace MangoBotCommandsNamespace
     $"**volume:** *Adjust the volume of the bot.*\n" +
     $"**skip:** *Skips the currently playing song.*\n" +
     $"**position:** *Gets the current songs position.*\n" +
-    $"**stop:** *Stops all playing songs.*";
+    $"**stop:** *Stops all playing songs.*\n" +
+    $"**queue:** *Gets the queue.*";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n\n**Moderator Commands:**\n" +

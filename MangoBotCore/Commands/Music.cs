@@ -304,5 +304,41 @@ namespace MangoBotCore.Commands
                 await ReplyAsync("Looping disabled!");
             }
         }
+        [Command("queue")]
+        [Alias("q")]
+        public async Task Queue()
+        {
+            var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            //Make sure that the player exists
+            if (player == null)
+            {
+                return;
+            }
+
+            //Make sure that the user is in the same VC as the bot
+            if (id == null || player.VoiceChannelId != id.Id)
+            {
+                await ReplyAsync("Join the voice chat I'm in first!");
+                return;
+            }
+
+            if (player.Queue.Count < 1)
+            {
+                await ReplyAsync($"Currently Playing: {player.CurrentTrack.Title}, Nothing Else is Queued.");
+                return;
+            }
+
+            string queue = $"Currently Playing: {player.CurrentTrack.Title}\nNext Up:";
+            int tracknumber = 1;
+            foreach(var track in player.Queue)
+            {
+                queue += $"\n{tracknumber.ToString()}: {track.Title}";
+                tracknumber++;
+            }
+
+            await ReplyAsync(queue);
+        }
     }
 }
