@@ -1,9 +1,12 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
 using Lavalink4NET.DiscordNet;
 using Lavalink4NET.Player;
 using Lavalink4NET.Rest;
 using MangoBotStartup;
 using Mono.Options;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +14,40 @@ namespace MangoBotCore.Commands
 {
     public class Music : ModuleBase<SocketCommandContext>
     {
+        public async Task CheckVoiceChat(SocketCommandContext context)
+        {
+            SocketGuildUser user = context.User as SocketGuildUser; // Get the user who executed the command
+            IVoiceChannel channel = user.VoiceChannel;
+
+            if (channel == null) // Check if the user is in a channel
+            {
+                await context.Message.Channel.SendMessageAsync("Please join a voice channel first.");
+            }
+            else
+            {
+                var clientUser = await context.Channel.GetUserAsync(context.Client.CurrentUser.Id); // Find the client's current user (I.e. this bot) in the channel the command was executed in
+                if (clientUser != null)
+                {
+                    if (clientUser is IGuildUser bot) // Cast the client user so we can access the VoiceChannel property
+                    {
+                        if (bot.VoiceChannel == null)
+                        {
+                            Console.WriteLine("Debug: Bot is not in any channels, continuing");
+                        }
+                        else if (bot.VoiceChannel.Id != channel.Id)
+                        {
+                            await ReplyAsync($"Bot is currently in: {bot.VoiceChannel.Name}, please join the voice chat to use commands!");
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Unable to find bot in server: {context.Guild.Name}");
+                }
+            }
+        }
+
         //private readonly Program.AudioService _audioService;
         private async Task<VoteLavalinkPlayer> GetPlayerAsync(bool connectToVoiceChannel = true)
         {
@@ -44,18 +81,17 @@ namespace MangoBotCore.Commands
         [Alias("fuckoff", "goaway")]
         public async Task Disconnect()
         {
-            //Variables... Variables... VARIABLES!!!!
             var player = await GetPlayerAsync();
-            
-            //Check if the player exists... who's the player and what is he playing??
-            if (player == null)
+            //Variables? WOAHHHHHH
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            if (player == null || id == null)
             {
                 return;
             }
 
-            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
-
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
@@ -72,19 +108,21 @@ namespace MangoBotCore.Commands
         public async Task Volume(int volume = 100)
         {
             var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
-
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId != null && player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
+
 
             if (volume > 100 || volume < 0)
             {
@@ -118,22 +156,21 @@ namespace MangoBotCore.Commands
         public async Task Play([Remainder] string query)
         {
             var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Variables? WOAHHHHHH
-            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
-
             //Makes sure that the bot is in the same voice chat as the author.
-            if (id == null || player.VoiceChannelId != id.Id)
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
-            
+
             //Searches for the track on YouTube.
             var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
 
@@ -179,16 +216,16 @@ namespace MangoBotCore.Commands
             var author = Context.Guild.GetUser(Context.User.Id);
             var player = await GetPlayerAsync();
             var results = await player.VoteAsync(Context.User.Id);
+            //Variables? WOAHHHHHH
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            //Checking if the player is null.
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Makes sure the user is in the same VC as the bot.
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
@@ -217,18 +254,17 @@ namespace MangoBotCore.Commands
         [Command("position")]
         public async Task Position()
         {
-            //More variables...
             var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            //Make sure the player exists, or something like that
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Check to make sure that the bot is in the same voice chat as the author
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
@@ -250,14 +286,13 @@ namespace MangoBotCore.Commands
             var player = await GetPlayerAsync();
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            //Make sure that the player actually exists...
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Hello? Can you hear me? This is to make sure that the author is actually in the same VC as the bot.
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
@@ -277,23 +312,23 @@ namespace MangoBotCore.Commands
         {
             //I pledge my allegience, to these variables, one project, under lXxMangoxXl... or something like that anyway.
             var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            //Make sure that the player exists
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Make sure that the user is in the same VC as the bot
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
             }
 
-            
-            if(player.IsLooping == false)
+
+            if (player.IsLooping == false)
             {
                 player.IsLooping = true;
                 await ReplyAsync("Looping enabled!");
@@ -309,16 +344,16 @@ namespace MangoBotCore.Commands
         public async Task Queue()
         {
             var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
 
-            //Make sure that the player exists
-            if (player == null)
+            if (player == null || id == null)
             {
                 return;
             }
 
-            //Make sure that the user is in the same VC as the bot
-            if (id == null || player.VoiceChannelId != id.Id)
+            //Makes sure that the bot is in the same voice chat as the author.
+            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
             {
                 await ReplyAsync("Join the voice chat I'm in first!");
                 return;
