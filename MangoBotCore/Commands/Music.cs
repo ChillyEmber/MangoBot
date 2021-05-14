@@ -90,13 +90,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             // when using StopAsync(true) the player also disconnects and clears the track queue.
             // DisconnectAsync only disconnects from the channel.
@@ -117,13 +111,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId != null && player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
 
             if (volume > 100 || volume < 0)
@@ -166,13 +154,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             //Searches for the track on YouTube.
             var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
@@ -226,13 +208,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             if (author.GuildPermissions.Administrator || author.GuildPermissions.ManageMessages || Context.User.Id == Program._client.GetApplicationInfoAsync().Result.Owner.Id || author.Roles.Any(r => r.Name == "DJ"))
             {
@@ -266,13 +242,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-           //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             if (player.CurrentTrack == null)
             {
@@ -295,13 +265,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             if (player.CurrentTrack == null)
             {
@@ -325,13 +289,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
 
             if (player.IsLooping == false)
@@ -358,13 +316,7 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            /*//Makes sure that the bot is in the same voice chat as the author.
-            if (player.VoiceChannelId == null || player.VoiceChannelId != id.Id)
-            {
-                await ReplyAsync("Join the voice chat I'm in first!");
-                return;
-            }*/
-            //await CheckVoiceChat(Context);
+            await CheckVoiceChat(Context);
 
             if (player.Queue.Count < 1)
             {
