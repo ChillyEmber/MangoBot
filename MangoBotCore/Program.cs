@@ -115,7 +115,14 @@ namespace MangoBotStartup
 
             await _client.SetGameAsync(config.game); // Set the game the bot is playing
 
-            await AudioService.InitializeAsync();
+            try
+            {
+                await AudioService.InitializeAsync();
+            }
+            catch(System.Net.WebSockets.WebSocketException)
+            {
+                Console.WriteLine("Couldn't connect to LavaLink server");
+            }
 
             await Task.Delay(-1); // Delay for -1 to keep the console window open
 

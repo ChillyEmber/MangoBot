@@ -138,7 +138,29 @@ namespace MangoBotCommandsNamespace
                     }
                     break;
                 default:
-                    await ReplyAsync($"Only have one input argument, you currently have {args.Length}, you're only supposed to have 1!");
+                    if (args[0].Contains("@everyone") | args[0].Contains("@here")) //Checking for any everyone or here pings.
+                    {
+                        await ReplyAsync("Tsk Tsk");
+                    }
+                    else
+                    {
+                        int count = 0;
+                        foreach(string s in args)
+                        {
+                            ulong UserID = MentionUtils.ParseUser(args[count]); //Takes the UserID from mention and saves it to UserID
+                            if (pp.ppsize.ContainsKey(UserID))
+                            {
+                                ppnum = pp.ppsize[UserID];
+                            }
+                            else
+                            {
+                                pp.ppsize.Add(UserID, ppnum);
+                                File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(pp));
+                            }
+                            await ReplyAsync($"{Program._client.GetUser(UserID).Username}'s penis size is {penisquotes[ppnum]}");
+                            count++;
+                        }
+                    }
                     break;
             }
         }
@@ -398,6 +420,7 @@ namespace MangoBotCommandsNamespace
                         await ReplyAsync($"There was an http exception when trying to send the DM, probably because the user has blocked DMs from me.");
                     }
 
+                    banre = $"{Context.Message.Author} | " + banre;
                     await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
                     await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
                 }
@@ -476,6 +499,43 @@ namespace MangoBotCommandsNamespace
         private async Task totalservers()
         {
             await ReplyAsync(Program._client.Guilds.Count.ToString());
+        }
+        [Command("hackban")]
+        [RequireUserPermission(GuildPermission.BanMembers, Group = "Permissions")]
+        [RequireUserPermission(GuildPermission.Administrator, Group = "Permissions")]
+        [RequireOwner(Group = "Permissions")]
+        private async Task hackban(string findUser, [Remainder] string banre = "reason not specified")
+        {
+            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.BanMembers == true)
+            {
+
+                if (ulong.TryParse(Regex.Replace(findUser, @"[^\w\d]", ""), out ulong converted))
+                { //Removes any extra stuff to just get userid
+                    var usertobehammered = Context.Client.GetUser(converted) ?? Context.Guild.GetUser(converted); //Saves tobebanned user as SocketGuildUser //THROWS ERROR HERE WHEN NOT IN MUTUAL GUILDS
+
+                    if (usertobehammered == null)
+                    {
+                        await ReplyAsync("The user came out to be null, please screenshot this and send this to lXxMangoxXl#8878 (The ban, WILL NOT go through if this message appears)");
+                    }
+
+                    banre = $"{Context.Message.Author} | " + banre;
+
+                    await Context.Guild.AddBanAsync(usertobehammered, 0, banre); //Adds the ban
+                    await ReplyAsync($"User {usertobehammered.Mention} has been banned.");
+                }
+                else
+                {
+                    await ReplyAsync("Couldn't parse findUser string."); //If findUser couldn't be parsed for whatever reason
+                }
+            }
+            else
+            {
+                if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
+                {
+                    await Context.Message.DeleteAsync();
+                }
+                await ReplyAsync("You need to give me Ban Members in this server before I can run this command!");
+            }
         }
     }
 }
