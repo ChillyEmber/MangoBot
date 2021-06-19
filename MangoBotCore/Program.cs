@@ -121,7 +121,7 @@ namespace MangoBotStartup
             }
             catch(System.Net.WebSockets.WebSocketException)
             {
-                Console.WriteLine("Couldn't connect to LavaLink server");
+                Console.WriteLine("Couldn't connect to LavaLink server.");
             }
 
             await Task.Delay(-1); // Delay for -1 to keep the console window open
