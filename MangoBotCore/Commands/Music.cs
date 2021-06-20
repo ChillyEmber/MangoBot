@@ -167,11 +167,11 @@ namespace MangoBotCore.Commands
             }
 
             //If the track is greater than 90m
-            else if (track.Duration.TotalMinutes > 90)
+            /*else if (track.Duration.TotalMinutes > 90)
             {
                 await ReplyAsync("That song was too long (>90m)");
                 return;
-            }
+            }*/
 
             //Some blacklist stuff.
             else if (track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") || track.Title.Contains("ringing") || track.Title.Contains("18+"))
@@ -180,11 +180,13 @@ namespace MangoBotCore.Commands
                 return;
             }
 
+            await player.SetVolumeAsync(5f / 100f);
+
             var position = await player.PlayAsync(track, enqueue: true);
 
             if (position == 0) //If the track is first in the queue.
             {
-                await ReplyAsync("🔈 Playing: " + track.Title);
+                await ReplyAsync("🔈 Playing: " + track.Title + $"\nVolume: {player.Volume * 100}%");
             }
             else //If the track is not first in queue.
             {
@@ -320,15 +322,15 @@ namespace MangoBotCore.Commands
 
             if (player.Queue.Count < 1)
             {
-                await ReplyAsync($"Currently Playing: {player.CurrentTrack.Title}, Nothing Else is Queued.");
+                await ReplyAsync($"**Currently Playing:** {player.CurrentTrack.Title}\n**Nothing Else is Queued.**");
                 return;
             }
 
-            string queue = $"Currently Playing: {player.CurrentTrack.Title}\nNext Up:";
+            string queue = $"**Currently Playing:** {player.CurrentTrack.Title}\n**Next Up:**";
             int tracknumber = 1;
             foreach(var track in player.Queue)
             {
-                queue += $"\n{tracknumber.ToString()}: {track.Title}";
+                queue += $"\n*{tracknumber}:* {track.Title}";
                 tracknumber++;
             }
 
