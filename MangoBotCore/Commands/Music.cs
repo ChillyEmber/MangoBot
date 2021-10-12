@@ -8,6 +8,7 @@ using MangoBotStartup;
 using Mono.Options;
 using System;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace MangoBotCore.Commands
@@ -142,7 +143,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("play")]
-        [Alias("p")]
+        [Alias("p", "soundcloud")]
         public async Task Play([Remainder] string query)
         {
             var player = await GetPlayerAsync();
@@ -155,9 +156,21 @@ namespace MangoBotCore.Commands
             }
 
             await CheckVoiceChat(Context);
-
-            //Searches for the track on YouTube.
             var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
+            
+            if (Context.Message.Content.Contains("^soundcloud"))
+            {
+                track = await Program.AudioService.GetTrackAsync(query, SearchMode.SoundCloud);
+                await ReplyAsync("Searching on SoundCloud...");
+            }
+            else
+            {
+                /*if (Context.Message.Content.Contains("playlist"))
+                {
+                    
+                }*/
+                await ReplyAsync("Searching on YouTube...");
+            }
 
             //If the tract wasn't found
             if (track == null)
@@ -174,18 +187,18 @@ namespace MangoBotCore.Commands
             }*/
 
             //Some blacklist stuff.
-            else if (track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") || track.Title.Contains("ringing") || track.Title.Contains("18+"))
+            else if (track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") ||
+                     track.Title.Contains("ringing") || track.Title.Contains("18+"))
             {
                 await ReplyAsync("Audio returned with a blacklisted title!");
                 return;
             }
 
-            await player.SetVolumeAsync(5f / 100f);
-
             var position = await player.PlayAsync(track, enqueue: true);
 
             if (position == 0) //If the track is first in the queue.
             {
+                await player.SetVolumeAsync(5f / 100f);
                 await ReplyAsync("🔈 Playing: " + track.Title + $"\nVolume: {player.Volume * 100}%");
             }
             else //If the track is not first in queue.
@@ -336,5 +349,16 @@ namespace MangoBotCore.Commands
 
             await ReplyAsync(queue);
         }
+
+        [Command("randomuser")]
+        [Alias("ru")]
+        public async Task RandomUser(ulong channelid)
+        {
+            var channel = Context.Guild.GetChannel(channelid);
+            int funnyusernumber = new Random().Next(0, channel.Users.Count());
+            SocketGuildUser user = channel.Users.ToList()[funnyusernumber];
+            await ReplyAsync($"{user.Username}, {user.Id}");
+        }
     }
+    
 }

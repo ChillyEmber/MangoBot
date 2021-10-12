@@ -45,7 +45,8 @@ namespace MangoBotStartup
                     appealurl = "",
                     LavalinkPassword = "",
                     LavalinkRestURL = "",
-                    LavalinkWebsocketURL = ""
+                    LavalinkWebsocketURL = "",
+                    CatAPIKey = ""
                 };
                 File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
             }
@@ -90,18 +91,6 @@ namespace MangoBotStartup
             //await serviceProvider.DisposeAsync();
 
             string botToken = config.token; // Make a string for the token
-
-            string prefix = config.prefix;
-
-            string disabledpenis = config.disabledpenis;
-
-            string appealurl = config.appealurl;
-
-            string LavalinkPassword = config.LavalinkPassword;
-
-            string LavalinkRestURL = config.LavalinkRestURL;
-
-            string LavalinkWebsocketURL = config.LavalinkWebsocketURL;
 
             //ulong botowner = config.botowner;
 
@@ -174,6 +163,7 @@ namespace MangoBotStartup
         public string LavalinkPassword { get; set; }
         public string LavalinkRestURL { get; set; }
         public string LavalinkWebsocketURL { get; set; }
+        public string CatAPIKey { get; set; }
     }
 
 }
