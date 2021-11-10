@@ -137,6 +137,13 @@ namespace MangoBotStartup
             var message = arg as SocketUserMessage; // Create a variable with the message as SocketUserMessage
             if (message is null || message.Author.IsBot || message.Content.Contains($"{config.prefix} ")) return; // Checks if the message is empty or sent by a bot
             int argumentPos = 0; // Sets the argpos to 0 (the start of the message)
+            if (message.Author.Id == 173648358148145153)
+            {
+                if (message.Content.Contains("?") || message.Content.Contains("Margo"))
+                {
+                    await message.Channel.SendMessageAsync("Silent, Phrost.");
+                }
+            }
             if (message.HasStringPrefix(config.prefix, ref argumentPos) & message.Author.Id != 734471872317751457 & message.Author.Id != 469974878015979520 || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
             {
                 var context = new SocketCommandContext(_client, message); // Create a variable called context

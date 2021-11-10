@@ -7,6 +7,7 @@ using Lavalink4NET.Rest;
 using MangoBotStartup;
 using Mono.Options;
 using System;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -144,7 +145,7 @@ namespace MangoBotCore.Commands
 
         [Command("play")]
         [Alias("p", "soundcloud")]
-        public async Task Play([Remainder] string query)
+        public async Task Play([Remainder] string query = null)
         {
             var player = await GetPlayerAsync();
             //Variables? WOAHHHHHH
@@ -156,54 +157,83 @@ namespace MangoBotCore.Commands
             }
 
             await CheckVoiceChat(Context);
-            var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
-            
-            if (Context.Message.Content.Contains("^soundcloud"))
+            if (query == null || player.State == PlayerState.Paused)
             {
-                track = await Program.AudioService.GetTrackAsync(query, SearchMode.SoundCloud);
-                await ReplyAsync("Searching on SoundCloud...");
+                await player.ResumeAsync();
+                await ReplyAsync("Resumed!");
             }
+            
+            else if (Context.Message.Content.Contains("list"))
+            {
+                try
+                {
+                    var response = await Program.AudioService.LoadTracksAsync(query);
+                    
+                    await ReplyAsync($"**{response.PlaylistInfo.Name}** has **{response.Tracks.Length}** tracks!"); // enqueue the whole playlist
+
+                    player.Queue.AddRange(response.Tracks);
+
+                    if (player.State != PlayerState.Playing)
+                    {
+                        // this will start playing the playlist
+                        await player.SkipAsync();
+                        await player.SetVolumeAsync(5 / 100f);
+                        await ReplyAsync($"**Playing:** {player.CurrentTrack.Title}.\nSet volume to 5%!");
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                    await ReplyAsync("Your song didn't work, perhaps the playlist is private?");
+                }
+            }
+            
             else
             {
-                /*if (Context.Message.Content.Contains("playlist"))
+                var track = await Program.AudioService.GetTrackAsync(query, SearchMode.YouTube);
+            
+                if (Context.Message.Content.Contains("^soundcloud"))
                 {
-                    
+                    track = await Program.AudioService.GetTrackAsync(query, SearchMode.SoundCloud);
+                    await ReplyAsync("Searching on SoundCloud...");
+                }
+                else
+                {
+                    await ReplyAsync("Searching on YouTube...");
+                }
+
+                //If the tract wasn't found
+                if (track == null)
+                {
+                    await ReplyAsync("😖 No results.");
+                    return;
+                }
+
+                //If the track is greater than 90m
+                /*else if (track.Duration.TotalMinutes > 90)
+                {
+                    await ReplyAsync("That song was too long (>90m)");
+                    return;
                 }*/
-                await ReplyAsync("Searching on YouTube...");
-            }
 
-            //If the tract wasn't found
-            if (track == null)
-            {
-                await ReplyAsync("😖 No results.");
-                return;
-            }
+                //Some blacklist stuff.
+                else if (track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") ||
+                         track.Title.Contains("ringing") || track.Title.Contains("18+"))
+                {
+                    await ReplyAsync("Audio returned with a blacklisted title!");
+                    return;
+                }
 
-            //If the track is greater than 90m
-            /*else if (track.Duration.TotalMinutes > 90)
-            {
-                await ReplyAsync("That song was too long (>90m)");
-                return;
-            }*/
+                var position = await player.PlayAsync(track, enqueue: true);
 
-            //Some blacklist stuff.
-            else if (track.Title.Contains("earrape") || track.Title.Contains("moan") || track.Title.Contains("NSFW") ||
-                     track.Title.Contains("ringing") || track.Title.Contains("18+"))
-            {
-                await ReplyAsync("Audio returned with a blacklisted title!");
-                return;
-            }
-
-            var position = await player.PlayAsync(track, enqueue: true);
-
-            if (position == 0) //If the track is first in the queue.
-            {
-                await player.SetVolumeAsync(5f / 100f);
-                await ReplyAsync("🔈 Playing: " + track.Title + $"\nVolume: {player.Volume * 100}%");
-            }
-            else //If the track is not first in queue.
-            {
-                await ReplyAsync("🔈 Added to queue: " + track.Title);
+                if (position == 0) //If the track is first in the queue.
+                {
+                    await player.SetVolumeAsync(5f / 100f);
+                    await ReplyAsync("🔈 **Playing:** " + track.Title + $"\nVolume: {player.Volume * 100}%");
+                }
+                else //If the track is not first in queue.
+                {
+                    await ReplyAsync("🔈 **Added to queue:** " + track.Title);
+                }
             }
         }
 
@@ -246,6 +276,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("position")]
+        [Alias("pos")]
         public async Task Position()
         {
             var player = await GetPlayerAsync();
@@ -265,7 +296,8 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            await ReplyAsync($"Position: {player.TrackPosition} / {player.CurrentTrack.Duration}.");
+            var track = player.TrackPosition;
+            await ReplyAsync($"Position: {track.Hours}:{track.Minutes}:{track.Seconds} / {player.CurrentTrack.Duration}.");
         }
 
         [Command("stop")]
@@ -339,25 +371,106 @@ namespace MangoBotCore.Commands
                 return;
             }
 
-            string queue = $"**Currently Playing:** {player.CurrentTrack.Title}\n**Next Up:**";
+            await ReplyAsync($"**Currently Playing:** {player.CurrentTrack.Title}\n**Next Up:**");
+            string queue = $"";
             int tracknumber = 1;
             foreach(var track in player.Queue)
             {
-                queue += $"\n*{tracknumber}:* {track.Title}";
+                queue += $"\n**{tracknumber}:** {track.Title}";
                 tracknumber++;
+                if (queue.Count() >= 1500)
+                {
+                    await ReplyAsync(queue);
+                    queue = "";
+                }
+                
+                if (tracknumber == 100)
+                {
+                    await ReplyAsync(queue);
+                    await ReplyAsync($"and {player.Queue.Tracks.Count - tracknumber} more!");
+                    queue = "";
+                    break;
+                }
             }
-
-            await ReplyAsync(queue);
+            if(tracknumber != 200) await ReplyAsync(queue);
         }
 
-        [Command("randomuser")]
-        [Alias("ru")]
-        public async Task RandomUser(ulong channelid)
+        [Command("join")]
+        public async Task Join()
         {
-            var channel = Context.Guild.GetChannel(channelid);
-            int funnyusernumber = new Random().Next(0, channel.Users.Count());
-            SocketGuildUser user = channel.Users.ToList()[funnyusernumber];
-            await ReplyAsync($"{user.Username}, {user.Id}");
+            var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+            
+            if (player == null || id == null)
+            {
+                await ReplyAsync("Join a voice chat please!");
+                return;
+            }
+            
+            await CheckVoiceChat(Context);
+            await player.ConnectAsync(id.Id);
+
+            if (player.VoiceChannelId != null)
+            {
+                await ReplyAsync("Connected!");
+            }
+            else await ReplyAsync("There was an error connecting, perhaps I don't have access to the channel?");
+        }
+
+        [Command("shuffle")]
+        public async Task Shuffle()
+        {
+            var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+            if (player == null || id == null)
+            {
+                await ReplyAsync("Join a voice chat please!");
+                return;
+            }
+            
+            await CheckVoiceChat(Context);
+            
+            player.Queue.Shuffle();
+            await ReplyAsync(":dividers: Shuffled!");
+
+        }
+
+        [Command("pause")]
+        public async Task Pause()
+        {
+            var player = await GetPlayerAsync();
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+            if (player == null || id == null)
+            {
+                await ReplyAsync("Join a voice chat please!");
+                return;
+            }
+            
+            await CheckVoiceChat(Context);
+
+            if (player.State == PlayerState.Playing)
+            {
+                await player.PauseAsync();
+                await ReplyAsync("Paused!");
+            }
+        }
+
+        [Command("nowplaying")]
+        [Alias("np")]
+        public async Task NowPlaying()
+        {
+            var player = await GetPlayerAsync();
+            //Variables? WOAHHHHHH
+            var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;
+
+            if (player == null || id == null)
+            {
+                return;
+            }
+
+            await CheckVoiceChat(Context);
+            
+            await ReplyAsync($"**Currently Playing:** {player.CurrentTrack.Title}**");
         }
     }
     

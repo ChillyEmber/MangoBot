@@ -41,31 +41,37 @@ namespace MangoBotCommandsNamespace
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             string prefix = config.prefix;
             string CommandsList = $"**Commands:**\n" +
-    $"***Current Prefix is {prefix}***\n" +
-    $"----------------------------\n" +
-    $"**help:** *Displays this command.*\n" +
-    $"**about:** *Displays some information about the bot!*\n" +
-    $"**penis:** *Generates a penis size for the mentioned user.*\n" +
-    $"**8ball:** *Read the future with this 8ball command!*\n" +
-    $"**ping:** *Sends the ping of the discord bot.*\n" +
-    $"**slap @user:** *Slaps specified user.*\n" +
-    $"**joke:** *Tells a dad joke!*\n" +
-    $"**avatar:** *Sends the avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-    $"**defaultavatar:** *Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.*\n" +
-    $"**bann:** *\"bann\" someone!*\n" +
-    $"**invite:** *Get the bot's invite!*\n" +
-    $"**inspire:** *Get \"inspired\" (not really), powered by InspiroBot.*\n" +
-    $"**kiss:** *Kiss the bride/groom/yes.*\n" +
-    $"**unfunny:** *Use when someone says something unhumorous.*" +
-    $"\n\n**Music Commands:**\n" +
-    $"----------------------------\n" +
-    $"**play [Song Name]:** *Searches the song on YouTube, connects to the VC, and plays the song.*\n" +
-    $"**disconnect:** *Disconnects from the voice chat you are currently in.*\n" +
-    $"**volume:** *Adjust the volume of the bot.*\n" +
-    $"**skip:** *Skips the currently playing song.*\n" +
-    $"**position:** *Gets the current songs position.*\n" +
-    $"**stop:** *Stops all playing songs.*\n" +
-    $"**queue:** *Gets the queue.*";
+                                  $"***Current Prefix is {prefix}***\n" +
+                                  $"----------------------------\n" +
+                                  $"**help:** Displays this command.\n" +
+                                  $"**about:** Displays some information about the bot!\n" +
+                                  $"**donate:** Get information about donating to MangoBot <3\n" +
+                                  $"**penis:** Generates a penis size for the mentioned user.\n" +
+                                  $"**8ball:** Read the future with this 8ball command!\n" +
+                                  $"**ping:** Sends the ping of the discord bot.\n" +
+                                  $"**slap @user:** Slaps specified user.\n" +
+                                  $"**joke:** Tells a dad joke!\n" +
+                                  $"**avatar:** Sends the avatar of the person mentioned, or yourself if nobody is mentioned.\n" +
+                                  $"**defaultavatar:** Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.\n" +
+                                  $"**bann:** \"bann\" someone!\n" +
+                                  $"**invite:** Get the bot's invite!\n" +
+                                  $"**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" +
+                                  $"**kiss:** Kiss the bride/groom/yes.\n" +
+                                  $"**unfunny:** Use when someone says something unhumorous";
+            
+            string MusicList = $"\n\n**Music Commands:**\n" + 
+                               $"----------------------------\n" +
+                               $"**play [Song Name]:** Searches the song on YouTube, connects to the VC, and plays the song.\n" +
+                               $"**disconnect:** Disconnects from the voice chat you are currently in.\n" +
+                               $"**volume:** Adjust the volume of the bot.\n" + 
+                               $"**skip:** Skips the currently playing song.\n" +
+                               $"**position:** Gets the current songs position.\n" +
+                               $"**stop:** Stops all playing songs.\n" +
+                               $"**queue:** Gets the queue.\n" +
+                               $"**pause:** Pauses the current song without getting rid of the queue, and can be resumed with *just* {prefix}play.\n" +
+                               $"**shuffle:** Shuffles the current queue!\n" +
+                               $"**join:** Joins the VC you're in! (use it if the bot won't join your VC)\n" +
+                               $"**nowplaying/np:** Gets the currently playing song!";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList = (CommandsList + $"\n\n**Moderator Commands:**\n" +
@@ -75,6 +81,7 @@ namespace MangoBotCommandsNamespace
                     $"**hackban:** *Bans mentioned user with reason specified, except doesn't dm them that they're banned, works if they're not currently in the discord (hopefully.) Ex. `{config.prefix}hackban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)");
             }
             await Context.User.SendMessageAsync(CommandsList);
+            await Context.User.SendMessageAsync(MusicList);
             var check = new Emoji("✅");
             await Context.Message.AddReactionAsync(check);
             await ReplyAsync("Sent!");
@@ -554,6 +561,22 @@ namespace MangoBotCommandsNamespace
                 }
                 await ReplyAsync("You need to give me Ban Members in this server before I can run this command!");
             }
+        }
+        
+        [Command("randomuser")]
+        [Alias("ru")]
+        public async Task RandomUser(ulong channelid)
+        {
+            var channel = Context.Guild.GetChannel(channelid);
+            int funnyusernumber = new Random().Next(0, channel.Users.Count());
+            SocketGuildUser user = channel.Users.ToList()[funnyusernumber];
+            await ReplyAsync($"{user.Username}, {user.Id}");
+        }
+
+        [Command("donate")]
+        public async Task Donate(string urmom = null)
+        {
+            await ReplyAsync("Thank you for your interest in donating to MangoBot! <3\nhttps://s.mangosnetwork.win/paypal");
         }
     }
 }
