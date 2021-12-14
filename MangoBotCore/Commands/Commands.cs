@@ -620,7 +620,7 @@ namespace MangoBotCommandsNamespace
                 newTxtContent = newTxtContent + $"\n{content}";
                 File.WriteAllText("blacklistedusers.txt", newTxtContent);
             }
-            Program.blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+            Program.blacklistedUsers = File.ReadAllLines("blacklistedusers.txt");
             await ReplyAsync($"Blacklisted the ID {content}");
         }
         
@@ -634,7 +634,7 @@ namespace MangoBotCommandsNamespace
             newContent = newContent.Where(e => e != content).ToArray();
             File.WriteAllText("blacklistedusers.txt", newContent.ToString());
 
-            Program.blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+            Program.blacklistedUsers = File.ReadAllLines("blacklistedusers.txt");
 
             await ReplyAsync($"Unblacklisted the ID {content}");
         }

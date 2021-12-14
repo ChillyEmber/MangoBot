@@ -68,7 +68,7 @@ namespace MangoBotStartup
                 File.WriteAllText("blacklistedusers.txt", null);
             }
             
-            blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+            blacklistedUsers = File.ReadAllLines("blacklistedusers.txt");
                 
                 
                 
