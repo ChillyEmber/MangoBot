@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Lavalink4NET;
@@ -23,6 +24,7 @@ namespace MangoBotStartup
 
 
         // Creating the necessary variables
+        public static string[] blacklistedUsers;
         public static DiscordSocketClient _client;
         public static IAudioService AudioService;
         private CommandService _commands;
@@ -54,11 +56,22 @@ namespace MangoBotStartup
             {
                 config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             }
+
             if (!File.Exists("ppsize.json"))
             {
                 File.WriteAllText("ppsize.json", JsonConvert.SerializeObject(new PPSize()));
+
             }
 
+            if (!File.Exists("blacklistedusers.txt"))
+            {
+                File.WriteAllText("blacklistedusers.txt", null);
+            }
+            
+            blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+                
+                
+                
             _client = new DiscordSocketClient(); // Define _client
             _commands = new CommandService(); // Define _commands
             _services = new ServiceCollection() // Define _services
@@ -144,7 +157,7 @@ namespace MangoBotStartup
                     await message.Channel.SendMessageAsync("Silent, Phrost.");
                 }
             }
-            if (message.HasStringPrefix(config.prefix, ref argumentPos) & message.Author.Id != 734471872317751457 & message.Author.Id != 469974878015979520 || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
+            if (message.HasStringPrefix(config.prefix, ref argumentPos) & !blacklistedUsers.Contains(message.Author.Id.ToString()) || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
             {
                 var context = new SocketCommandContext(_client, message); // Create a variable called context
                 var result = await _commands.ExecuteAsync(context, argumentPos, _services); // Create a veriable called result

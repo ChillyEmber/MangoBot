@@ -57,7 +57,8 @@ namespace MangoBotCommandsNamespace
                                   $"**invite:** Get the bot's invite!\n" +
                                   $"**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" +
                                   $"**kiss:** Kiss the bride/groom/yes.\n" +
-                                  $"**unfunny:** Use when someone says something unhumorous";
+                                  $"**unfunny:** Use when someone says something unhumorous\n" +
+                                  $"**dog:** Get a random dog picture";
             
             string MusicList = $"\n\n**Music Commands:**\n" + 
                                $"----------------------------\n" +
@@ -601,6 +602,41 @@ namespace MangoBotCommandsNamespace
         public async Task Donate(string urmom = null)
         {
             await ReplyAsync("Thank you for your interest in donating to MangoBot! <3\nhttps://s.mangosnetwork.win/paypal");
+        }
+
+        [Command("blacklist")]
+        [RequireOwner]
+        public async Task Blacklist(string content)
+        {
+            if (Program.blacklistedUsers == null)
+            {
+                string newTxtContent = File.ReadAllText("blacklistedusers.txt");
+                newTxtContent = newTxtContent + content;
+                File.WriteAllText("blacklistedusers.txt", newTxtContent);
+            }
+            else
+            {
+                string newTxtContent = File.ReadAllText("blacklistedusers.txt");
+                newTxtContent = newTxtContent + $"\n{content}";
+                File.WriteAllText("blacklistedusers.txt", newTxtContent);
+            }
+            Program.blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+            await ReplyAsync($"Blacklisted the ID {content}");
+        }
+        
+        [Command("unblacklist")]
+        [RequireOwner]
+        public async Task Unblacklist(string content)
+        {
+            string[] newContent;
+                
+            newContent = File.ReadAllLines("blacklistedusers.txt");
+            newContent = newContent.Where(e => e != content).ToArray();
+            File.WriteAllText("blacklistedusers.txt", newContent.ToString());
+
+            Program.blacklistedUsers = File.ReadAllLines("blacklistedUsers.txt");
+
+            await ReplyAsync($"Unblacklisted the ID {content}");
         }
     }
 }
