@@ -77,8 +77,8 @@ namespace MangoBotCommandsNamespace
                 CommandsList = (CommandsList + $"\n\n**Moderator Commands:**\n" +
                     $"----------------------------\n" +
                     $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
-                    $"**ban:** *Bans mentioned user with reason specified. Ex. `{config.prefix}ban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)*\n" +
-                    $"**hackban:** *Bans mentioned user with reason specified, except doesn't dm them that they're banned, works if they're not currently in the discord (hopefully.) Ex. `{config.prefix}hackban @lXxMangoxXl Not working on MangoBot`. (Requires Ban Members)");
+                    $"**ban:** *Bans mentioned user with reason specified. Ex. `{config.prefix}ban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)*\n" +
+                    $"**hackban:** *Bans mentioned user with reason specified, except doesn't dm them that they're banned, works if they're not currently in the discord (hopefully.) Ex. `{config.prefix}hackban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)");
             }
             await Context.User.SendMessageAsync(CommandsList);
             await Context.User.SendMessageAsync(MusicList);
@@ -232,7 +232,7 @@ namespace MangoBotCommandsNamespace
         {
             //Contacts an API to recieve a random dad joke
             HttpResponse<string> response = Unirest.get("https://icanhazdadjoke.com/")
-            .header("User-Agent", "MangoBot https://github.com/lXxMangoxXl/MangoBot")
+            .header("User-Agent", "MangoBot https://github.com/ChillyEmber/MangoBot")
             .header("Accept", "text/plain")
             .asString();
             await ReplyAsync(response.Body.ToString());
@@ -326,9 +326,9 @@ namespace MangoBotCommandsNamespace
         [Command("about")]
         private async Task about()
         {
-            await ReplyAsync("Made by lXxMangoxXl#8878\n" +
-                "https://github.com/lXxMangoxXl/MangoBot/ \n" +
-                "Made with Discord.Net, C#, and lots of love!");
+            await ReplyAsync("Made by ChillyEmber#8878\n" +
+                "https://github.com/ChillyEmber/MangoBot/ \n" +
+                "Made with Discord.NET, C#, and lots of love!");
         }
 
 
@@ -500,6 +500,30 @@ namespace MangoBotCommandsNamespace
             }
         }
 
+        [Command("dog")]
+        [Summary("Gets a random dog picture!")]
+        private async Task dog(string input = "")
+        {
+            HttpResponse<string> jsonResponse = Unirest.get("https://dog.ceo/api/breeds/image/random")
+                .asString();
+            dogResponse response = JsonConvert.DeserializeObject<dogResponse>(jsonResponse.Body);
+            if (response.status == "success")
+            {
+                await ReplyAsync(response.message);
+            }
+            else
+            {
+                await ReplyAsync("Sorry about that, there was a error! Please dm `ChillyEmber#8878` to fix this <3");
+                Console.WriteLine($"DogAPI Error - {response.status} - {response.message}");
+            }
+
+        }
+
+        public class dogResponse
+        {
+            public string message { get; set; }
+            public string status { get; set; }
+        }
 
         [Command("kiss")]
         private async Task kiss(string placeholder = "")
@@ -536,7 +560,7 @@ namespace MangoBotCommandsNamespace
 
                     if (usertobehammered == null)
                     {
-                        //await ReplyAsync("The user came out to be null, please screenshot this and send this to lXxMangoxXl#8878 (The ban, WILL NOT go through if this message appears)");
+                        //await ReplyAsync("The user came out to be null, please screenshot this and send this to ChillyEmber#8878 (The ban, WILL NOT go through if this message appears)");
                         await Context.Guild.AddBanAsync(converted, 0, banre); //Adds the ban
                         await ReplyAsync($"User <@{converted}> has been banned.");
                     }

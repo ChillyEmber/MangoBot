@@ -326,7 +326,7 @@ namespace MangoBotCore.Commands
         [Command("loop")]
         public async Task Loop()
         {
-            //I pledge my allegience, to these variables, one project, under lXxMangoxXl... or something like that anyway.
+            //I pledge my allegience, to these variables, one project, under ChillyEmber... or something like that anyway.
             var player = await GetPlayerAsync();
             //Variables? WOAHHHHHH
             var id = Context.Guild.GetUser(Context.User.Id).VoiceChannel;

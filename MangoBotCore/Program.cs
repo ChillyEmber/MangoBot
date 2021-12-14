@@ -88,7 +88,7 @@ namespace MangoBotStartup
             // Do not forget disposing the service provider!
 
             // I didn't forget :) (we intentionally forgot)
-            //await serviceProvider.DisposeAsync();
+            // await AudioService.Dispose();
 
             string botToken = config.token; // Make a string for the token
 
