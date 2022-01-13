@@ -48,17 +48,18 @@ namespace MangoBotCommandsNamespace
                                   $"**donate:** Get information about donating to MangoBot <3\n" +
                                   $"**penis:** Generates a penis size for the mentioned user.\n" +
                                   $"**8ball:** Read the future with this 8ball command!\n" +
-                                  $"**ping:** Sends the ping of the discord bot.\n" +
-                                  $"**slap @user:** Slaps specified user.\n" +
-                                  $"**joke:** Tells a dad joke!\n" +
-                                  $"**avatar:** Sends the avatar of the person mentioned, or yourself if nobody is mentioned.\n" +
-                                  $"**defaultavatar:** Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.\n" +
-                                  $"**bann:** \"bann\" someone!\n" +
-                                  $"**invite:** Get the bot's invite!\n" +
-                                  $"**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" +
-                                  $"**kiss:** Kiss the bride/groom/yes.\n" +
-                                  $"**unfunny:** Use when someone says something unhumorous\n" +
-                                  $"**dog:** Get a random dog picture";
+                                  $"**ping:** Sends the ping of the discord bot.\n";
+            
+            string CommandsList2 = "$**slap @user:** Slaps specified user.\n" + 
+                                   $"**joke:** Tells a dad joke!\n" + 
+                                   $"**avatar:** Sends the avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
+                                   $"**defaultavatar:** Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
+                                   $"**bann:** \"bann\" someone!\n" + 
+                                   $"**invite:** Get the bot's invite!\n" + 
+                                   $"**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" + 
+                                   $"**kiss:** Kiss the bride/groom/yes.\n" + 
+                                   $"**unfunny:** Use when someone says something unhumorous\n" + 
+                                   $"**dog:** Get a random dog picture";
             
             string MusicList = $"\n\n**Music Commands:**\n" + 
                                $"----------------------------\n" +
@@ -75,13 +76,14 @@ namespace MangoBotCommandsNamespace
                                $"**nowplaying/np:** Gets the currently playing song!";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
-                CommandsList = (CommandsList + $"\n\n**Moderator Commands:**\n" +
+                CommandsList2 = (CommandsList2 + $"\n\n**Moderator Commands:**\n" +
                     $"----------------------------\n" +
                     $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
                     $"**ban:** *Bans mentioned user with reason specified. Ex. `{config.prefix}ban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)*\n" +
                     $"**hackban:** *Bans mentioned user with reason specified, except doesn't dm them that they're banned, works if they're not currently in the discord (hopefully.) Ex. `{config.prefix}hackban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)");
             }
             await Context.User.SendMessageAsync(CommandsList);
+            await Context.User.SendMessageAsync(CommandsList2);
             await Context.User.SendMessageAsync(MusicList);
             var check = new Emoji("✅");
             await Context.Message.AddReactionAsync(check);
