@@ -144,7 +144,7 @@ namespace MangoBotCore.Commands
         }
 
         [Command("play")]
-        [Alias("p", "soundcloud")]
+        [Alias("p", "soundcloud", "fp", "forceplay")]
         public async Task Play([Remainder] string query = null)
         {
             var player = await GetPlayerAsync();
@@ -222,7 +222,7 @@ namespace MangoBotCore.Commands
                     await ReplyAsync("Audio returned with a blacklisted title!");
                     return;
                 }
-
+                
                 var position = await player.PlayAsync(track, enqueue: true);
 
                 if (position == 0) //If the track is first in the queue.

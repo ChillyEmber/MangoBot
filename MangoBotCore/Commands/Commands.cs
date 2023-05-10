@@ -40,45 +40,45 @@ namespace MangoBotCommandsNamespace
             ulong authorid = Context.Message.Author.Id;
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
             string prefix = config.prefix;
-            string CommandsList = $"**Commands:**\n" +
+            string CommandsList = "**Commands:**\n" +
                                   $"***Current Prefix is {prefix}***\n" +
-                                  $"----------------------------\n" +
-                                  $"**help:** Displays this command.\n" +
-                                  $"**about:** Displays some information about the bot!\n" +
-                                  $"**donate:** Get information about donating to MangoBot <3\n" +
-                                  $"**penis:** Generates a penis size for the mentioned user.\n" +
-                                  $"**8ball:** Read the future with this 8ball command!\n" +
-                                  $"**ping:** Sends the ping of the discord bot.\n";
+                                  "----------------------------\n" +
+                                  "**help:** Displays this command.\n" +
+                                  "**about:** Displays some information about the bot!\n" +
+                                  "**donate:** Get information about donating to MangoBot <3\n" +
+                                  "**penis:** Generates a penis size for the mentioned user.\n" +
+                                  "**8ball:** Read the future with this 8ball command!\n" +
+                                  "**ping:** Sends the ping of the discord bot.\n";
             
             string CommandsList2 = "$**slap @user:** Slaps specified user.\n" + 
-                                   $"**joke:** Tells a dad joke!\n" + 
-                                   $"**avatar:** Sends the avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
-                                   $"**defaultavatar:** Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
-                                   $"**bann:** \"bann\" someone!\n" + 
-                                   $"**invite:** Get the bot's invite!\n" + 
-                                   $"**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" + 
-                                   $"**kiss:** Kiss the bride/groom/yes.\n" + 
-                                   $"**unfunny:** Use when someone says something unhumorous\n" + 
-                                   $"**dog:** Get a random dog picture";
+                                   "**joke:** Tells a dad joke!\n" + 
+                                   "**avatar:** Sends the avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
+                                   "**defaultavatar:** Sends the default avatar of the person mentioned, or yourself if nobody is mentioned.\n" + 
+                                   "**bann:** \"bann\" someone!\n" + 
+                                   "**invite:** Get the bot's invite!\n" + 
+                                   "**inspire:** Get \"inspired\" (not really), powered by InspiroBot.\n" + 
+                                   "**kiss:** Kiss the bride/groom/yes.\n" + 
+                                   "**unfunny:** Use when someone says something unfunny.\n" + 
+                                   "**dog:** Get a random dog picture";
             
-            string MusicList = $"\n\n**Music Commands:**\n" + 
-                               $"----------------------------\n" +
-                               $"**play [Song Name]:** Searches the song on YouTube, connects to the VC, and plays the song.\n" +
-                               $"**disconnect:** Disconnects from the voice chat you are currently in.\n" +
-                               $"**volume:** Adjust the volume of the bot.\n" + 
-                               $"**skip:** Skips the currently playing song.\n" +
-                               $"**position:** Gets the current songs position.\n" +
-                               $"**stop:** Stops all playing songs.\n" +
-                               $"**queue:** Gets the queue.\n" +
+            string MusicList = "\n\n**Music Commands:**\n" + 
+                               "----------------------------\n" +
+                               "**play [Song Name]:** Searches the song on YouTube, connects to the VC, and plays the song.\n" +
+                               "**disconnect:** Disconnects from the voice chat you are currently in.\n" +
+                               "**volume:** Adjust the volume of the bot.\n" + 
+                               "**skip:** Skips the currently playing song.\n" +
+                               "**position:** Gets the current songs position.\n" +
+                               "**stop:** Stops all playing songs.\n" +
+                               "**queue:** Gets the queue.\n" +
                                $"**pause:** Pauses the current song without getting rid of the queue, and can be resumed with *just* {prefix}play.\n" +
-                               $"**shuffle:** Shuffles the current queue!\n" +
-                               $"**join:** Joins the VC you're in! (use it if the bot won't join your VC)\n" +
-                               $"**nowplaying/np:** Gets the currently playing song!";
+                               "**shuffle:** Shuffles the current queue!\n" +
+                               "**join:** Joins the VC you're in! (use it if the bot won't join your VC)\n" +
+                               "**nowplaying/np:** Gets the currently playing song!";
             if (!Context.IsPrivate && Context.Guild.GetUser(authorid).GuildPermissions.ManageMessages == true)
             {
                 CommandsList2 = (CommandsList2 + $"\n\n**Moderator Commands:**\n" +
-                    $"----------------------------\n" +
-                    $"**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
+                    "----------------------------\n" +
+                    "**purge:** *Purges amount of messages specified (Requires Manage Messages)*\n" +
                     $"**ban:** *Bans mentioned user with reason specified. Ex. `{config.prefix}ban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)*\n" +
                     $"**hackban:** *Bans mentioned user with reason specified, except doesn't dm them that they're banned, works if they're not currently in the discord (hopefully.) Ex. `{config.prefix}hackban @ChillyEmber Not working on MangoBot`. (Requires Ban Members)");
             }
@@ -94,18 +94,7 @@ namespace MangoBotCommandsNamespace
         {
             //Defining config
             config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-
-            //Checks to see if penis command is disabled
-            switch (config.disabledpenis)
-            {
-                case "1": //If it's one, consider it disabled.
-                    //Checks if it's Unlimited, if it is, don't allow the penis command to run.
-                    if (!Context.IsPrivate && Context.Guild.Id == 687875961995132973)
-                    {
-                        return;
-                    }
-                    break;
-            }
+            
             var pp = JsonConvert.DeserializeObject<PPSize>(File.ReadAllText("ppsize.json"));
 
             //just generate random number and set that num to ppnum
@@ -180,18 +169,18 @@ namespace MangoBotCommandsNamespace
         [Command("8ball")]
         private async Task eightball(params string[] args)
         {
-            string[] eightballquotes = { "As I see it, yes.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don’t count on it.", "Don’t count on it.", "It is certain.",
+            string[] eightBallQuotes = { "As I see it, yes.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don’t count on it.", "Don’t count on it.", "It is certain.",
                 "It is decidedly so.", "Most likely.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Outlook good.", "Reply hazy, try again.", "Signs point to yes", "Very doubtful", "Without a doubt.",
             "Yes.", "Yes - definitely.", "You may rely on it"};
             Random rand = new Random();
-            int index = rand.Next(eightballquotes.Length);
+            int index = rand.Next(eightBallQuotes.Length);
             if (args.Length == 0)
             {
-                await ReplyAsync("You have to say something in order to recieve a prediction!");
+                await ReplyAsync("You have to say something in order to receive a prediction!");
             }
             else
             {
-                await ReplyAsync($"{eightballquotes[index]}");
+                await ReplyAsync($"{eightBallQuotes[index]}");
             }
         }
         [Command("slap")]
@@ -207,7 +196,7 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
+                if (!CheckBlacklistedTerms(args.ToString()))
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -251,7 +240,7 @@ namespace MangoBotCommandsNamespace
             }
             if (args.Length == 1)
             {
-                if (args[0].Contains("@everyone") | args[0].Contains("@here")) //Makes sure that there isn't an @everyone or a @here to prevent a mass-ping through the bot.
+                if (!CheckBlacklistedTerms(args.ToString())) //Makes sure that there isn't an @everyone or a @here to prevent a mass-ping through the bot.
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -287,11 +276,11 @@ namespace MangoBotCommandsNamespace
         {
             if (args.Length == 0)
             {
-                await ReplyAsync($"Heres your default avatar! {Context.User.GetDefaultAvatarUrl()}");
+                await ReplyAsync($"Here's your default avatar! {Context.User.GetDefaultAvatarUrl()}");
             }
             if (args.Length == 1) //Makes sure that there isn't an @everyone or a @here to prevent a mass-ping through the bot.
             {
-                if (args[0].Contains("@everyone") | args[0].Contains("@here"))
+                if (!CheckBlacklistedTerms(args.ToString()))
                 {
                     await ReplyAsync("Tsk Tsk");
                 }
@@ -318,7 +307,7 @@ namespace MangoBotCommandsNamespace
         [RequireOwner]
         private async Task say([Remainder] string args)
         {
-            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages == true)
+            if (!Context.IsPrivate && Context.Guild.CurrentUser.GuildPermissions.ManageMessages)
             {
                 await Context.Message.DeleteAsync();
             }
@@ -333,54 +322,14 @@ namespace MangoBotCommandsNamespace
                 "https://github.com/ChillyEmber/MangoBot/ \n" +
                 "Made with Discord.NET, C#, and lots of love!");
         }
-
-
-        [Command("disablepenis")]
-        private async Task disablepenis()
-        {
-            //label the config as a string.
-            string text = File.ReadAllText("config.json");
-
-            //Prepare the config.disabledpenis
-            config = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("config.json"));
-            string disabledpenisstringg = config.disabledpenis;
-
-            //Checks to see if your userid is either Mango's or River's
-            if (Context.User.Id == 287778194977980416 | Context.User.Id == 706468176707190845)
-            {
-                //If it's currently disabled
-                if (config.disabledpenis == "1")
-                {
-                    //replace the found text with the other text
-                    text = text.Replace("\"disabledpenis\": \"1\"", "\"disabledpenis\": \"2\"");
-                    //write it
-                    File.WriteAllText("config.json", text);
-                    //reply with a basic response
-                    await ReplyAsync("Penis commands are now *enabled*");
-                }
-                //if it's not currently disabled
-                else
-                {
-                    //replace the found text with the other text
-                    text = text.Replace("\"disabledpenis\": \"2\"", "\"disabledpenis\": \"1\"");
-                    //write it
-                    File.WriteAllText("config.json", text);
-                    //reply with a basic response
-                    await ReplyAsync("Penis commands are now *disabled*");
-                }
-            }
-            //If you aren't Mango or River
-            else
-            {
-                await ReplyAsync("You have to be either River or Mango to execute this command!");
-            }
-        }
+        
         [Command("brazil")]
         [Summary("Send someone to brazil.")]
         private async Task brazil([Remainder] string SolutionQuoteOnQuote = "")
         {
             await ReplyAsync("https://media1.tenor.com/images/d632412aaffe388de314b7abff9c408e/tenor.gif?itemid=17781004");
         }
+        
         [Command("purge")]
         [Summary("purges X messages")]
         [RequireUserPermission(GuildPermission.ManageMessages, Group = "Permission")]
@@ -461,7 +410,7 @@ namespace MangoBotCommandsNamespace
         {
             var bannedfool = usertobehammered;
 
-            if (String.IsNullOrEmpty(banre))
+            if (String.IsNullOrEmpty(banre) | CheckBlacklistedTerms(banre))
             {
                 await ReplyAsync($"Banned {bannedfool.Nickname ?? bannedfool.Username}!");
             }
@@ -639,6 +588,13 @@ namespace MangoBotCommandsNamespace
             Program.blacklistedUsers = File.ReadAllLines("blacklistedusers.txt");
 
             await ReplyAsync($"Unblacklisted the ID {content}");
+        }
+
+        public bool CheckBlacklistedTerms(string content)
+        {
+            bool containsBlacklisted = content.Contains("@everyone") || content.Contains("@here");
+
+            return containsBlacklisted;
         }
     }
 }

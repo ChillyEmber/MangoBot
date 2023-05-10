@@ -43,7 +43,6 @@ namespace MangoBotStartup
                     token = "",
                     game = "",
                     botowner = "",
-                    disabledpenis = "1",
                     appealurl = "",
                     LavalinkPassword = "",
                     LavalinkRestURL = "",
@@ -146,21 +145,13 @@ namespace MangoBotStartup
 
         private async Task HandleCommandAsync(SocketMessage arg)
         {
-            string messageLower = arg.Content.ToLower(); // Convert the message to a Lower
             var message = arg as SocketUserMessage; // Create a variable with the message as SocketUserMessage
             if (message is null || message.Author.IsBot || message.Content.Contains($"{config.prefix} ")) return; // Checks if the message is empty or sent by a bot
             int argumentPos = 0; // Sets the argpos to 0 (the start of the message)
-            if (message.Author.Id == 173648358148145153)
-            {
-                if (message.Content.Contains("?") || message.Content.Contains("Margo"))
-                {
-                    await message.Channel.SendMessageAsync("Silent, Phrost.");
-                }
-            }
             if (message.HasStringPrefix(config.prefix, ref argumentPos) & !blacklistedUsers.Contains(message.Author.Id.ToString()) || message.HasMentionPrefix(_client.CurrentUser, ref argumentPos)) // If the message has the prefix at the start or starts with someone mentioning the bot
             {
                 var context = new SocketCommandContext(_client, message); // Create a variable called context
-                var result = await _commands.ExecuteAsync(context, argumentPos, _services); // Create a veriable called result
+                var result = await _commands.ExecuteAsync(context, argumentPos, _services); // Create a variable called result
                 if (!result.IsSuccess) // If the result is unsuccessful
                 {
                     Console.WriteLine($"{message.Author.Username} : {message.Author.Id} : {message.Content} : {result.ErrorReason}"); // Print the error to console
@@ -178,7 +169,6 @@ namespace MangoBotStartup
         public string prefix { get; set; }
         public string game { get; set; }
         public string botowner { get; set; }
-        public string disabledpenis { get; set; }
         public string appealurl { get; set; }
         public string LavalinkPassword { get; set; }
         public string LavalinkRestURL { get; set; }
